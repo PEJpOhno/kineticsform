@@ -1,4 +1,4 @@
-RID,K,,,,,,,,,,
-1,0.56,,AE,,H2O,>,>,,AC,,EtOH
-2,1.2,,AC,,MeOH,>,>,,MA,,H2O
-3,0.14,,AE,,MeOH,>,>,,MA,,EtOH
+RID, k,,,,,,,,,,  
+1, 0.054,,AcOEt,,OH-,>,>,,AcO-,,EtOH  
+2, 1.4,,AciPr,,OH-,>,>,,AcO-,,iPrOH  
+3, 0.031,,EGAc2,2,OH-,>,>,2,Ac,,EG  
