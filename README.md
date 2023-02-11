@@ -25,7 +25,7 @@ To start quickly, put the sample script "kineticsform_sample_script.ipynb"  on t
 4. The products were putted in alternately with the coeficient and the chemical species.  
 Note the reaction formula should be inputted by the left filling. The example of a csv format was as follows. The coefficient '1'　can be substituted for blank.  
 
-example of a csv format [1](##-References)  
+example of a csv format [1]  
 
     RID, k,,,,,,,,,,  
     1, 0.054,,AcOEt,,OH-,>,>,,AcO-,,EtOH  
