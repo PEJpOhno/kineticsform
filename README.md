@@ -1,4 +1,3 @@
-# kineticsform  
 
 ## 1. Overvies  
 "kineticsform" is a Python library to set up reaction kinetics equations from reaction formulas and the rate constats provided as csv file.  
@@ -23,14 +22,15 @@ To start quickly, put the sample script "kineticsform_sample_script.ipynb"  on t
 2. The reactants were putted in alternately with the coeficient and the chemical species.  
 3. To separate the reactants and the products, two ">" were setted with two columns. 
 4. The products were putted in alternately with the coeficient and the chemical species.  
-Note the reaction formula should be inputted by the left filling. The example of a csv format was as follows. The coefficient '1'　can be substituted for blank.  
+Note the reaction formula should be inputted by the left filling. To descrbe chemical species, arithmetic symbols such as "+", "-" and "*" should be avoided. The coefficient '1'　can be substituted for blank.  
+The example of a csv format was as follows.  
 
 example of a csv format [1]  
 
     RID, k,,,,,,,,,,  
-    1, 0.054,,AcOEt,,OH-,>,>,,AcO-,,EtOH  
-    2, 1.4,,AciPr,,OH-,>,>,,AcO-,,iPrOH  
-    3, 0.031,,EGAc2,2,OH-,>,>,2,Ac,,EG  
+    1, 0.054,,AcOEt,,OHa1,>,>,,AcOa1,,EtOH  
+    2, 1.4,,AciPr,,OHa1,>,>,,AcOa1,,iPrOH  
+    3, 0.031,,EGAc2,2,OHa1,>,>,2,Aca1,,EG  
 
 ### 5-2. Run kineticsform   
 1. Import kineticsform.  
@@ -47,4 +47,4 @@ If the function ran successfully, the number of the unique chemical species, the
 
 
 ## References
-1) https://doi.org/10.1246/nikkashi.1973.1831
+1) https://doi.org/10.1295/koron1944.27.89
