@@ -92,7 +92,7 @@ def react2kinetic(df):  #main body
     uq_mn = 'number of the unique chemical species = '+str(len(uniq_ml))+'\n'+'list of unique chemical species\n'
     eq_txt = ''.join(marged_eq)
     kinetics_resl = uq_mn+str(uniq_ml)+'\n\n'+eq_txt
-    return print(kinetics_resl)
+    return [uniq_ml, print(kinetics_resl)]
 
 
 #end

@@ -1,6 +1,6 @@
 
-## 1. Overvies  
-"kineticsform" is a Python library to set up reaction kinetics equations from reaction formulas and the rate constats provided as csv file.  
+## 1. Overviews  
+"kineticsform" is a Python library to set up theoretical reaction kinetics equations from reaction formulas and the rate constats provided as csv file.  
 
 ## 2. Current version and requirements  
 - current version = 0.0.1   
@@ -14,23 +14,23 @@ Released under the BSD-3 license, license that can be found in the LICENSE file.
 
 ## 4. Installation  
 Download the directry "src" to a suitable directry on your computer.  
-To start quickly, put the sample script "kineticsform_sample_script.ipynb"  on the same directry described above. In this case, Jupyter Notebook was required.  
+For quick start, put the sample script "kineticsform_sample_script.ipynb"  on the same directry described above. In this case, Jupyter Notebook is required.  
 
 ## 5. Usage  
 ### 5-1. Prepare csv file 
-1. Describe raction formula in csv format. THe first row shoud be header. The first column and teh second column should be reaction ID (named RID) and the rate constant (named k). 
-2. The reactants were putted in alternately with the coeficient and the chemical species.  
-3. To separate the reactants and the products, two ">" were setted with two columns. 
-4. The products were putted in alternately with the coeficient and the chemical species.  
-Note the reaction formula should be inputted by the left filling. To descrbe chemical species, arithmetic symbols such as "+", "-" and "*" should be avoided. The coefficient '1'　can be substituted for blank.  
-The example of a csv format was as follows.  
+1. Describe reaction formula in csv format. THe first row shoud be header. The first column and the second column should be reaction ID (named RID) and the rate constant (named k). Other column names can be omitted.  
+2. The reactants are putted in alternately with the coeficient and the chemical species. Each reaction should be described in one row.  
+3. To separate the reactants and the products, two ">" are setted with two columns. 
+4. The products are putted in alternately with the coeficient and the chemical species.  
+Note the reaction formula should be inputted by the left filling. To describe chemical species, it is better to avoid to use arithmetic symbols such as "+", "-" and "*" (e.g. use "**a**"(nion) in place of "-"). The coefficient '1'　can be substituted for blank.  
+The example of a csv format is as follows.  Attached "sample_data.csv" [1] and "sample_data2.csv" [2] are also available for demonstration.  
 
-example of a csv format [1]  
+example of a csv format   
 
     RID, k,,,,,,,,,,  
-    1, 0.054,,AcOEt,,OHa1,>,>,,AcOa1,,EtOH  
-    2, 1.4,,AciPr,,OHa1,>,>,,AcOa1,,iPrOH  
-    3, 0.031,,EGAc2,2,OHa1,>,>,2,Aca1,,EG  
+    1,0.054,,AcOEt,,OHa1,>,>,,AcOa1,,EtOH  
+    2,1.4,,AcOiPr,,OHa1,>,>,,AcOa1,,iPrOH  
+    3,0.031,,EGOAc2,2,OHa1,>,>,2,AcOa1,,EG  
 
 ### 5-2. Run kineticsform   
 1. Import kineticsform.  
@@ -43,8 +43,9 @@ from src import kineticsform as kf
 ```py
 kf.react2kinetic(df)
 ```
-If the function ran successfully, the number of the unique chemical species, the list of unique chemidcal species and the kinetic equations as text form were returned.  
-
+If the function run successfully, the number of the unique chemical species, the unique chemidcal species and the kinetic equations as text form, and the the list of unique chemidcal species are returned.  
+The returned result is list form. The list of the unique chemical species can be taken out as the first element of the returned result (*list name[0]*). 
 
 ## References
-1) https://doi.org/10.1295/koron1944.27.89
+1) 桜田一郎; 坂口康義; 大村恭弘. [11] 数種の水溶性高分子酢酸エステルの加水分解速度. 高分子化學, 1970, 27.297: 89-96.  https://doi.org/10.1295/koron1944.27.89
+2) 永井俊. 物理化学実験 「酢酸エステルの加水分解速度測定」 の問題点と改良法. 日本医科大学基礎科学紀要= The Bulletin of liberal arts & sciences, Nippon Medical School/日本医科大学基礎科学紀要編集委員会 編, 2015, 44: 1-24.  https://www.nms.ac.jp/library/college/pdf/kenkyujoho/katsudo/kiyou/no44/44thebulletin_takashi_nagai.pdf
