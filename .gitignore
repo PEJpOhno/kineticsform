@@ -1,5 +1,5 @@
 src/kineticsform/__pycache__/
 .ipynb_checkpoints/
-.DS_Store/
-src/.DS_Store/
-src/kineticsform/.DS_Store/
+.DS_Store
+src/.DS_Store
+src/kineticsform/.DS_Store
