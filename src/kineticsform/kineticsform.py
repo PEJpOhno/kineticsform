@@ -60,9 +60,10 @@ def gen_eq(s):
     k_eqr = k+'*'+rate_eqr(react)
     prod_d = dic_lst(prod)
     react_m = m_lst(react)
+    react_m2 = [e for e in react_m if e!='1']
     prod_m = m_lst(prod)
     prod_m2 = [e for e in prod_m if e!='1']
-    for e in react_m:
+    for e in react_m2:
         eq_d['d'+e] = '-'+k_eqr
     for e in prod_m2:
         if prod_d[e] != '1':
