@@ -56,8 +56,8 @@ def gen_eq(s):
     lat =  row[len(row)-1]
     react=row[3:form]
     prod=row[lat+1:len(row)-2]
-    k = row[2]
-    k_eqr = k+'*'+rate_eqr(react)
+    k_n = row[0]
+    k_eqr = 'k'+k_n+'*'+rate_eqr(react)
     prod_d = dic_lst(prod)
     react_m = m_lst(react)
     react_m2 = [e for e in react_m if e!='1']
@@ -74,14 +74,22 @@ def gen_eq(s):
 
 
 def react2kinetic(df):  #main body  
+    def k2lst(x):
+        temp_l = []
+        temp_l = ['k'+str(x[0]), x[1]]
+        return temp_l
     marged_eq = []
+    k_lst=[]
     dfrev = df.copy()
+    k_lst=list(dfrev.apply(k2lst, axis=1))
     dfrev = dfrev.fillna('1')
     dfrev = dfrev.astype('str')
+    dfrev.iloc[:,1] = dfrev.iloc[:,1].astype(np.float64)
     dfrev.insert(1, 'eq_dic', np.NaN)
     dfrev['eq_dic'] = dfrev.apply(gen_eq, axis=1)
     uniq_m = set(sum([list(x.keys()) for x in dfrev['eq_dic']],[]))
-    uniq_ml = [e for e in list(uniq_m) if e!=None]
+    uniq_ml = sorted([e for e in list(uniq_m) if e!=None])
+    uniq_ml2 = sorted([e[1:] for e in uniq_ml])
     for e in uniq_ml:
         l_eq = [e,]
         for d in dfrev['eq_dic']:
@@ -91,10 +99,11 @@ def react2kinetic(df):  #main body
         l_eq2.append('\n')
         marged_eq.append(''.join(l_eq2))
     uq_mn = 'number of the unique chemical species = '+str(len(uniq_ml))+'\n'+'list of unique chemical species\n'
-    eq_txt = ''.join(marged_eq)
-    kinetics_resl = uq_mn+str(uniq_ml)+'\n\n'+eq_txt
-    return [uniq_ml, print(kinetics_resl)]
-
+    marged_eq2 = sorted(marged_eq)
+    eq_txt = ''.join(marged_eq2)
+    eq_txt = eq_txt.replace('=+', '=')
+    kinetics_resl = uq_mn+str(uniq_ml2)+'\n\n'+eq_txt
+    return [uniq_ml2, uniq_ml, k_lst, print(kinetics_resl)]
 
 #end
 

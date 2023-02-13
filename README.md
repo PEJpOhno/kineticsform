@@ -43,8 +43,13 @@ from src import kineticsform as kf
 ```py
 kf.react2kinetic(df)
 ```
-If the function run successfully, the number of the unique chemical species, the unique chemidcal species and the kinetic equations as text form, and the the list of unique chemidcal species are returned.  
-The returned result is list form. The list of the unique chemical species can be taken out as the first element of the returned result (*list name[0]*). 
+If the function run successfully, the number of the unique chemical species, the unique chemidcal species and the kinetic equations as text form, and some list type return value are returned.  
+
+Configuration of the retuned value  
+[0]: list of the unique chemical species  
+[1]: list of the left-hand side of the differential equation  
+[2]: list of the pair of the named rate constant and its value  
+
 
 ## References
 1) 桜田一郎; 坂口康義; 大村恭弘. [11] 数種の水溶性高分子酢酸エステルの加水分解速度. 高分子化學, 1970, 27.297: 89-96.  https://doi.org/10.1295/koron1944.27.89
