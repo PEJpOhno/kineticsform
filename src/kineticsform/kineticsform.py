@@ -103,7 +103,7 @@ def react2kinetic(df):  #main body
     eq_txt = ''.join(marged_eq2)
     eq_txt = eq_txt.replace('=+', '=')
     kinetics_resl = uq_mn+str(uniq_ml2)+'\n\n'+eq_txt
-    return [uniq_ml2, uniq_ml, k_lst, print(kinetics_resl)]
+    return [uniq_ml2, uniq_ml, k_lst, eq_txt, print(kinetics_resl)]
 
 #end
 

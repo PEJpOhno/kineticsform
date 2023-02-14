@@ -49,6 +49,7 @@ Configuration of the retuned value
 [0]: list of the unique chemical species  
 [1]: list of the left-hand side of the differential equation  
 [2]: list of the pair of the named rate constant and its value  
+[3]: reaction kinetics equations as text form
 
 
 ## References
