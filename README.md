@@ -1,6 +1,6 @@
 
 ## 1. Overviews  
-"kineticsform" is a Python library to set up theoretical reaction kinetics equations from reaction formulas and the rate constats provided as csv file.  
+"kineticsform" is a Python module to set up theoretical reaction kinetics equations from reaction formulas and the rate constats provided as csv file.  
 
 ## 2. Current version and requirements  
 - current version = 0.0.1   
