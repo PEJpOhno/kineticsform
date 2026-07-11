@@ -1,4 +1,4 @@
-## Future worls: 
+## Future works:
 
 ## 初期濃度を変化させる事例  
 https://doi.org/10.1002/ange.201609757  

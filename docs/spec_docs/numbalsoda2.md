@@ -141,19 +141,19 @@
 
 ### 5.3 `t_eval` が未指定のときの自動補完（エントリ別）
 
-各エントリは現行実装と同じ時間点の作り方に合わせる。numbalsoda 経路は **`t_eval` が常に非 `None` の配列**を要するため、`method="LSODA"` かつ `t_eval is None` のときだけ §5.5 の共有ヘルパーで格子を生成してから `solve_ode`／numbalsoda に渡す。
+各エントリで作る時間格子の**数式**は下記のとおり。`method="LSODA"` のとき `solve_ode` に渡す時点では **`t_eval` は常に非 `None` の 1 次元配列**とする（`solve_ode` 自身は `t_eval is None` の LSODA を拒む）。
 
 1. **`RxnODEsolver.solve_system`**（実験オーバーレイなし）  
-   `n_dense = max(100, 1)`、`t_eval = np.linspace(t_span[0], t_span[1], n_dense)`。ここでは **`t_span` が補完区間の根拠**。
+   `n_dense = max(100, 1)`、`np.linspace(t_span[0], t_span[1], n_dense)`。`method="LSODA"` かつ `config.t_eval is None` のときは **`build_t_eval_when_none_for_lsoda(..., LsodaImplicitTEvalMode.SOLVE_SYSTEM, t_span=...)`** がこの式で格子を返す。ここでは **`t_span` が補完区間の根拠**。構築後は §5.2。
 
 2. **`RxnODEsolver._compute_rss`**  
-   `t_eval = np.sort(np.unique(t_exp_col))`（密格子は付与しない）。構築後は §5.2。
+   `t_eval = np.sort(np.unique(t_exp_col))`（密格子は付与しない）。**共有ヘルパーは呼ばず**、`solve_ode` 直前に同一式をインラインで組み立てる。構築後は §5.2。
 
 3. **`expdata_fit._integrate_datasets_for_params`**  
-   `n_dense = max(100, len(t_exp) * 10)`、`t_dense = np.linspace(t_start, t_span[1], n_dense)`、`t_eval = np.sort(np.unique(np.concatenate([t_exp, t_dense])))`。構築後は §5.2。
+   `n_dense = max(100, len(t_exp) * 10)`、`t_dense = np.linspace(t_start, t_span[1], n_dense)`、`t_eval = np.sort(np.unique(np.concatenate([t_exp, t_dense])))`。**共有ヘルパーは呼ばず**インライン。構築後は §5.2。
 
 4. **`expdata_fit._eval_ode_fit`**  
-   `t_eval = np.array(t_points)`。構築後は §5.2。
+   `t_eval = np.sort(np.unique(np.asarray(t, dtype=np.float64).ravel()))`（入力時刻 `t` を 1 次元 `float64` にしてから昇順・重複除去）。**共有ヘルパーは呼ばず**インライン。構築後は §5.2。
 
 ### 5.4 他 method
 
@@ -161,9 +161,10 @@
 
 ### 5.5 `t_eval` 補完と `solve_ode` の分担
 
-- `solve_ode` は `t_eval is None` のまま §5.3 のコンテキスト分岐を引数だけで再現しない。
-- `t_eval is None` の配列化は **`solver_backend` の共有ヘルパーにのみ**実装する。呼ぶのは **`method="LSODA"` かつ `t_eval is None`** のときに限る（numbalsoda 試行前）。`method != "LSODA"` ではヘルパーを挟まない。
-- `solv_ode` / `expdata_fit` 等は上記条件のとき **`solve_ode` 直前に必ずヘルパーを呼び**、返した 1 次元 `t_eval` を `solve_ode` に渡す。既に非 `None` ならヘルパーをスキップ可。各エントリに §5.3 の式を重複実装しない。
+- `solve_ode` は **`method="LSODA"` かつ `t_eval is None` のとき `ValueError`** とする（呼び出し側が格子を明示する契約）。`method != "LSODA"` のときは `t_eval is None` のまま `solve_ivp` に委ねうる（§5.4）。
+- **`RxnODEsolver.solve_system`**（`solv_ode.py`）は、`method="LSODA"` かつ `config.t_eval is None` かつ時間非依存のときだけ、**`build_t_eval_when_none_for_lsoda(LsodaImplicitTEvalMode.SOLVE_SYSTEM, t_span=self.config.t_span)`** を呼んでから `solve_ode` に渡す。`t_eval` が既に与えられていれば `np.sort(np.unique(...))` で正規化してから渡す。
+- **`RxnODEsolver._compute_rss`**、**`expdata_fit._integrate_datasets_for_params`**、**`expdata_fit._eval_ode_fit`** は、§5.3 の 2〜4 と同じ数式で `t_eval` を**各関数内にインライン実装**し、**共有ヘルパーは呼ばない**（レシピは `build_t_eval_when_none_for_lsoda` の `COMPUTE_RSS` / `INTEGRATE_DATASETS` / `EVAL_ODE_FIT` モードと同型）。
+- `build_t_eval_when_none_for_lsoda` は上記レシピを **`solver_backend` に集約した公開 API** であり、少なくとも **`SOLVE_SYSTEM`** では本番経路から呼ばれる。他モードは上記インライン実装と数式を共有するための単一参照点として提供される。
 - `solve_ode` の LSODA 分岐内で §5.2 の実効 `t_span` とフォールバック時の `solve_ivp` 引数整合を行う。
 
 #### 5.5.1 共有ヘルパー: モードと必須入力
@@ -172,12 +173,12 @@
 
 | モード | 主な呼び出し元 | 必須入力（補完用） | 生成式 |
 |--------|----------------|-------------------|--------|
-| `SOLVE_SYSTEM` | `RxnODEsolver.solve_system` | `t_span`: `tuple[float, float]` | `n_dense = max(100, 1)`、`t_eval = np.linspace(t_span[0], t_span[1], n_dense)` |
-| `COMPUTE_RSS` | `RxnODEsolver._compute_rss` | `t_exp_col`: 実験時刻 1 次元配列 | `t_eval = np.sort(np.unique(t_exp_col))` |
-| `INTEGRATE_DATASETS` | `expdata_fit._integrate_datasets_for_params` | `t_span`、`t_start`、`t_exp` | `n_dense = max(100, len(t_exp) * 10)`、`t_dense = np.linspace(t_start, t_span[1], n_dense)`、`t_eval = np.sort(np.unique(np.concatenate([t_exp, t_dense])))` |
-| `EVAL_ODE_FIT` | `expdata_fit._eval_ode_fit` | `t_points` | `t_eval = np.array(t_points)` |
+| `SOLVE_SYSTEM` | `RxnODEsolver.solve_system`（`t_eval is None` 時にヘルパー呼出） | `t_span`: `tuple[float, float]` | `n_dense = max(100, 1)`、`t_eval = np.linspace(t_span[0], t_span[1], n_dense)` |
+| `COMPUTE_RSS` | ヘルパー API。`_compute_rss` は**同式をインライン**（ヘルパー非呼出） | `t_exp_col`: 実験時刻 1 次元配列 | `t_eval = np.sort(np.unique(t_exp_col))` |
+| `INTEGRATE_DATASETS` | ヘルパー API。`_integrate_datasets_for_params` は**同式をインライン** | `t_span`、`t_start`、`t_exp` | `n_dense = max(100, len(t_exp) * 10)`、`t_dense = np.linspace(t_start, t_span[1], n_dense)`、`t_eval = np.sort(np.unique(np.concatenate([t_exp, t_dense])))` |
+| `EVAL_ODE_FIT` | ヘルパー API。`_eval_ode_fit` は**同式をインライン** | `t_points` | `t_eval = np.sort(np.unique(np.asarray(t_points, dtype=np.float64).ravel()))` |
 
-- `EVAL_ODE_FIT`: 多くの経路では先に `np.array(t)` 済みで `solve_ode` に `None` を渡さない。`None` 補完が必要なときに本モードを使う。
+- `EVAL_ODE_FIT`: `_eval_ode_fit` では入力 `t` を上式で正規化してから `solve_ode` に渡す（`solve_ode` に `t_eval=None` は渡さない）。
 - 戻り値: 浮動小数 `dtype` の 1 次元 `ndarray`、昇順かつ重複なし。入力に重複・非昇順があればヘルパー内で `np.sort(np.unique(...))` してよい。
 - 不足入力・不正 `t_span` 等: `ValueError`。
 - 5 つ目のモードは現仕様では定義しない。ヘルパーはモード列挙を拡張しやすい実装（`Enum`、分岐の集約、`match` 等）にする。
@@ -342,7 +343,7 @@
 ## 15. 実装 PR チェックリスト
 
 - [ ] **本体**: `solver_backend` の経路・フォールバック。`method="LSODA"` のときのみ numbalsoda 試行。§4 のキー分離。§4.4 は `success=False` と例外でキー分割しない。§4.3 に JIT／コンパイル失敗を含め §4.4 と混同しない。`method != "LSODA"` は従来 `solve_ivp`。import キャッシュ。
-- [ ] **§5・§5.5**: `build_t_eval_when_none_for_lsoda` / `LsodaImplicitTEvalMode` のみで `t_eval is None` を配列化。`solv_ode` / `expdata_fit` は LSODA かつ `None` のときだけ直前にヘルパー。numbalsoda 直前は非 `None` の `t_eval`。実効 `t_span` は LSODA 分岐内。`time_dependent=True` では §5 を適用しない。
+- [ ] **§5・§5.5**: `solve_ode` は LSODA で `t_eval is None` を拒む。`solve_system` は LSODA かつ `t_eval is None` のときだけ `build_t_eval_when_none_for_lsoda(SOLVE_SYSTEM)`。`_compute_rss` / `expdata_fit` は §5.3 と同型の式をインラインで組み立て（ヘルパー非必須）。numbalsoda 直前は非 `None` の `t_eval`。実効 `t_span` は LSODA 分岐内。`time_dependent=True` では §5 を適用しない。
 - [ ] **§3**: `time_dependent` 自動判定、§3.2 警告、§3.3 の rtol/atol/t_eval/t_span。
 - [ ] **`solve_ode` docstring**: §14。
 - [ ] **観測性**: §8（`warnings` のみ）。
@@ -357,4 +358,4 @@
 
 ---
 
-*本書は `numbalsoda.md` の内容を再編した整理版である。*
+
