@@ -22,6 +22,9 @@
 - Matplotlib  
 - Optuna
 
+[optional-dependencies]  
+- numbalsoda  
+
 ## Copyright and license
 Copyright (c) 2023-2026 Mitsuru Ohno
 Released under the BSD-3 license, license that can be found in the LICENSE file.
