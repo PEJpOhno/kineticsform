@@ -49,14 +49,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system_with_rate_consts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.get_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.debug_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.debug_ode_system()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.get_numbalsoda_sympy_spec"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_numbalsoda_sympy_spec()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.get_ode_info"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system_with_rate_consts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.debug_ode_system()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.get_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.get_symbolic_rate_const_keys"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_symbolic_rate_const_keys()</span></code></a></li>
 </ul>
 </li>
@@ -66,10 +62,13 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -98,56 +97,22 @@
              
   <section id="module-rxnfit.build_ode">
 <span id="rxnfit-build-ode-module"></span><h1>rxnfit.build_ode module<a class="headerlink" href="#module-rxnfit.build_ode" title="Link to this heading"></a></h1>
+<p>Numerical RHS builders from symbolic reaction-network ODEs.</p>
+<p><a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild" title="rxnfit.build_ode.RxnODEbuild"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnODEbuild</span></code></a> subclasses <a class="reference internal" href="rxnfit.rxn_reader.html#rxnfit.rxn_reader.RxnToODE" title="rxnfit.rxn_reader.RxnToODE"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnToODE</span></code></a> to produce
+lambdified right-hand sides and <a class="reference internal" href="#rxnfit.build_ode.create_system_rhs" title="rxnfit.build_ode.create_system_rhs"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_system_rhs()</span></code></a> closures for
+SciPy-based integrators and optional numbalsoda acceleration.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rxnfit.build_ode.</span></span><span class="sig-name descname"><span class="pre">RxnODEbuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_const_overrides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_const_overrides_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="rxnfit.rxn_reader.html#rxnfit.rxn_reader.RxnToODE" title="rxnfit.rxn_reader.RxnToODE"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnToODE</span></code></a></p>
-<p>Build ODE systems and numerical RHS functions from reaction definitions.</p>
-<p>Extends RxnToODE to produce callable ODE right-hand sides (e.g. for
-scipy.solve_ivp) and supports rate constants as expressions (e.g. k2=k1*2).
-Expression-defined constants are resolved to numbers when building
-create_ode_system(); for fitting, only free symbolic parameters appear
-in create_ode_system_with_rate_consts().</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">Inherits</span> <span class="pre">all</span> <span class="pre">attributes</span> <span class="pre">from</span> <span class="pre">RxnToODE.</span></span></dt>
-<dd></dd></dl>
-
+<p>Lambdified RHS builders atop <a class="reference internal" href="rxnfit.rxn_reader.html#rxnfit.rxn_reader.RxnToODE" title="rxnfit.rxn_reader.RxnToODE"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnToODE</span></code></a>.</p>
+<p>Resolved numeric rates feed <a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system" title="rxnfit.build_ode.RxnODEbuild.create_ode_system"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_ode_system()</span></code></a>; free symbols feed
+<a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts" title="rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_ode_system_with_rate_consts()</span></code></a> for optimizers.</p>
+<p>Refer to <a class="reference internal" href="rxnfit.rxn_reader.html#rxnfit.rxn_reader.RxnToODE" title="rxnfit.rxn_reader.RxnToODE"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnToODE</span></code></a> for inherited attributes such as
+<code class="docutils literal notranslate"><span class="pre">rate_consts_dict</span></code> and <code class="docutils literal notranslate"><span class="pre">function_names</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.create_ode_system">
 <span class="sig-name descname"><span class="pre">create_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system" title="Link to this definition"></a></dt>
-<dd><p>Numerical ODE functions (t, y) with rate
-constants resolved or embedded.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts">
-<span class="sig-name descname"><span class="pre">create_ode_system_with_rate_consts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts" title="Link to this definition"></a></dt>
-<dd><p>ODE functions with rate
-constants as extra arguments (for fitting).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_ode_system">
-<span class="sig-name descname"><span class="pre">get_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_ode_system" title="Link to this definition"></a></dt>
-<dd><p>Full ODE construction tuple for solvers.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.debug_ode_system">
-<span class="sig-name descname"><span class="pre">debug_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.debug_ode_system" title="Link to this definition"></a></dt>
-<dd><p>Detailed debug info.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_ode_info">
-<span class="sig-name descname"><span class="pre">get_ode_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_ode_info" title="Link to this definition"></a></dt>
-<dd><p>Print summary and optional debug.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">create_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd><p>Build numerical ODE right-hand side functions for integration.</p>
 <p>Rate constants that are expressions (e.g. k2=k1*2) are resolved to
 numbers via _resolve_rate_consts when all referenced symbols have
@@ -167,8 +132,8 @@ Functions take (t, y) with y in function_names order.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">create_ode_system_with_rate_consts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts">
+<span class="sig-name descname"><span class="pre">create_ode_system_with_rate_consts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts" title="Link to this definition"></a></dt>
 <dd><p>Build ODE functions with rate constants as explicit arguments.</p>
 <p>Used for fitting: rate constants are passed in at call time instead
 of being embedded. Only “free” parameters appear: keys that are
@@ -179,7 +144,7 @@ appear in symbolic_rate_const_keys.</p>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>(ode_functions, symbolic_rate_const_keys)</dt><dd><ul class="simple">
-<li><p>ode_functions: Species name -&gt; callable(t, <a href="#id4"><span class="problematic" id="id5">*</span></a>y, <a href="#id6"><span class="problematic" id="id7">*</span></a>rate_consts).</p></li>
+<li><p>ode_functions: Species name -&gt; callable(t, <a href="#id3"><span class="problematic" id="id4">*</span></a>y, <a href="#id5"><span class="problematic" id="id6">*</span></a>rate_consts).</p></li>
 <li><p>symbolic_rate_const_keys: List of free rate constant names
 in order (e.g. [‘k1’, ‘k3’] when k2=k1*2).</p></li>
 </ul>
@@ -197,8 +162,8 @@ in order (e.g. [‘k1’, ‘k3’] when k2=k1*2).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">debug_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.debug_ode_system">
+<span class="sig-name descname"><span class="pre">debug_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.debug_ode_system" title="Link to this definition"></a></dt>
 <dd><p>Collect debug information for the ODE system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -215,8 +180,31 @@ in order (e.g. [‘k1’, ‘k3’] when k2=k1*2).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id9">
-<span class="sig-name descname"><span class="pre">get_ode_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_numbalsoda_sympy_spec">
+<span class="sig-name descname"><span class="pre">get_numbalsoda_sympy_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate_const_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbolic_rate_const_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_numbalsoda_sympy_spec" title="Link to this definition"></a></dt>
+<dd><p>Package symbolic RHS data for numbalsoda <code class="docutils literal notranslate"><span class="pre">cfunc</span></code> compilation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rate_const_values</strong> – <code class="docutils literal notranslate"><span class="pre">None</span></code> embeds numeric substitutions; supplying a dict
+together with <code class="docutils literal notranslate"><span class="pre">symbolic_rate_const_keys</span></code> builds the augmented
+lambdify argument list <code class="docutils literal notranslate"><span class="pre">(t,</span> <span class="pre">*species,</span> <span class="pre">*p)</span></code>.</p></li>
+<li><p><strong>symbolic_rate_const_keys</strong> – Required whenever <code class="docutils literal notranslate"><span class="pre">rate_const_values</span></code> is a dict.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping with keys <code class="docutils literal notranslate"><span class="pre">expr_tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">lambdify_args</span></code>, <code class="docutils literal notranslate"><span class="pre">n_state</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_p</span></code>, and <code class="docutils literal notranslate"><span class="pre">p_order</span></code> (possibly empty).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – When only one of the optional arguments is provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_ode_info">
+<span class="sig-name descname"><span class="pre">get_ode_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_ode_info" title="Link to this definition"></a></dt>
 <dd><p>Print a short summary of the ODE system (and optionally debug).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -227,8 +215,8 @@ in order (e.g. [‘k1’, ‘k3’] when k2=k1*2).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id10">
-<span class="sig-name descname"><span class="pre">get_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_ode_system">
+<span class="sig-name descname"><span class="pre">get_ode_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_ode_system" title="Link to this definition"></a></dt>
 <dd><p>Return the full ODE construction for scipy.solve_ivp.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -248,16 +236,12 @@ create_ode_system() (rate constants resolved or embedded).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rxnfit.build_ode.RxnODEbuild.get_symbolic_rate_const_keys">
 <span class="sig-name descname"><span class="pre">get_symbolic_rate_const_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.RxnODEbuild.get_symbolic_rate_const_keys" title="Link to this definition"></a></dt>
-<dd><p>Return the list of free parameter names (p0 order) for fitting.</p>
-<p>Names are t-excluding symbols from rate_consts_dict (Symbol or
-free_symbols of expressions), in sorted order. Same order as
-create_ode_system_with_rate_consts and run_fit(p0=…) expect.</p>
+<dd><p>Sorted free-parameter names implied by <code class="docutils literal notranslate"><span class="pre">rate_consts_dict</span></code>.</p>
+<p>Symbols tied to expressions (for example <code class="docutils literal notranslate"><span class="pre">k1</span></code> inside <code class="docutils literal notranslate"><span class="pre">k2</span> <span class="pre">=</span> <span class="pre">2*k1</span></code>)
+participate, whereas purely numeric literals do not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Parameter names in order, e.g. [‘a’, ‘km’].</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[str]</p>
+<dd class="field-odd"><p>Lexicographically ordered strings matching the lambdify argument tail.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -266,41 +250,26 @@ create_ode_system_with_rate_consts and run_fit(p0=…) expect.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.build_ode.create_system_rhs">
-<span class="sig-prename descclassname"><span class="pre">rxnfit.build_ode.</span></span><span class="sig-name descname"><span class="pre">create_system_rhs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ode_functions_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_const_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbolic_rate_const_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.create_system_rhs" title="Link to this definition"></a></dt>
-<dd><p>Build the RHS function (t, y) for scipy.solve_ivp.</p>
-<p>Creates a closure over the ODE functions and optional rate constant
-values. When rate_const_values and symbolic_rate_const_keys are given,
-the ODE functions are called with (t, y, <a href="#id11"><span class="problematic" id="id12">*</span></a>rate_consts) in the order
-of symbolic_rate_const_keys.</p>
+<span class="sig-prename descclassname"><span class="pre">rxnfit.build_ode.</span></span><span class="sig-name descname"><span class="pre">create_system_rhs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ode_functions_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_const_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbolic_rate_const_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbalsoda_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.build_ode.create_system_rhs" title="Link to this definition"></a></dt>
+<dd><p>Closure <code class="docutils literal notranslate"><span class="pre">(t,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">dy/dt</span></code> consumed by SciPy integrators.</p>
+<p>Optional rate arguments are appended as <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">k0,</span> <span class="pre">k1,</span> <span class="pre">...)</span></code> following
+<code class="docutils literal notranslate"><span class="pre">symbolic_rate_const_keys</span></code>. Callables in <code class="docutils literal notranslate"><span class="pre">rate_const_values</span></code> expose
+time-dependent kinetic parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ode_functions_dict</strong> (<em>dict</em>) – Species name -&gt; ODE function (as from
-create_ode_system or create_ode_system_with_rate_consts).</p></li>
-<li><p><strong>function_names</strong> (<em>list</em>) – Species names in the same order as y.</p></li>
-<li><p><strong>rate_const_values</strong> (<em>dict</em><em> or </em><em>callable</em><em>, </em><em>optional</em>) – Rate constant key -&gt; numeric
-value, or a callable (t) -&gt; dict of rate constant values for
-time-dependent rates. Used when ODE functions expect rate constants
-as args. When callable, it is called with the current time t to
-get the dict.</p></li>
-<li><p><strong>symbolic_rate_const_keys</strong> (<em>list</em><em>, </em><em>optional</em>) – Order of rate constant
-keys matching the ODE functions. Required if rate_const_values
-is provided.</p></li>
+<li><p><strong>ode_functions_dict</strong> – Species-to-lambdify mapping from <a class="reference internal" href="#rxnfit.build_ode.RxnODEbuild" title="rxnfit.build_ode.RxnODEbuild"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnODEbuild</span></code></a>.</p></li>
+<li><p><strong>function_names</strong> – State component order mirrored in <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>rate_const_values</strong> – Constant dict or <code class="docutils literal notranslate"><span class="pre">(t)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code>.</p></li>
+<li><p><strong>symbolic_rate_const_keys</strong> – Required together with <code class="docutils literal notranslate"><span class="pre">rate_const_values</span></code>.</p></li>
+<li><p><strong>numbalsoda_context</strong> – Optional hooks for JIT RHS attachment.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>system_rhs(t, y) returning a list of d(species)/dt in</dt><dd><p>function_names order.</p>
+<dd class="field-even"><p>Callable with SciPy signature <code class="docutils literal notranslate"><span class="pre">system_rhs(t,</span> <span class="pre">y)</span></code>.</p>
 </dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>callable</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If any ODE function is None or if evaluation fails
-    during integration (fail fast).</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Missing lambdified function or RHS evaluation failure.</p>
 </dd>
 </dl>
 </dd></dl>

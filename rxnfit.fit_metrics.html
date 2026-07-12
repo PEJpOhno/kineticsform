@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">rxnfit.fit_metrics module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#rxnfit.fit_metrics.expdata_df_to_datasets"><code class="docutils literal notranslate"><span class="pre">expdata_df_to_datasets()</span></code></a></li>
@@ -57,6 +57,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -85,9 +88,9 @@
              
   <section id="module-rxnfit.fit_metrics">
 <span id="rxnfit-fit-metrics-module"></span><h1>rxnfit.fit_metrics module<a class="headerlink" href="#module-rxnfit.fit_metrics" title="Link to this heading"></a></h1>
-<p>Compute RSS, TSS, and R² for model vs. experimental data.</p>
-<p>TSS uses per-species means over the same valid points used for RSS.
-All functions use the same valid-point definition (NaN excluded).</p>
+<p>Goodness-of-fit metrics (RSS, TSS, R²) shared by solvers and fitters.</p>
+<p>Residuals and total sum of squares omit NaN pairs so RSS and TSS always refer
+to the same set of valid (time, species) samples.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.fit_metrics.expdata_df_to_datasets">
 <span class="sig-prename descclassname"><span class="pre">rxnfit.fit_metrics.</span></span><span class="sig-name descname"><span class="pre">expdata_df_to_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdata_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.fit_metrics.expdata_df_to_datasets" title="Link to this definition"></a></dt>

@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="rxnfit.expdata_fit_sci module" href="rxnfit.expdata_fit_sci.html" />
+    <link rel="next" title="rxnfit.expdata_fit module" href="rxnfit.expdata_fit.html" />
     <link rel="prev" title="rxnfit.solv_ode module" href="rxnfit.solv_ode.html" /> 
 </head>
 
@@ -57,10 +57,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#rxnfit.expdata_reader.time_course"><code class="docutils literal notranslate"><span class="pre">time_course()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -89,11 +92,10 @@
              
   <section id="module-rxnfit.expdata_reader">
 <span id="rxnfit-expdata-reader-module"></span><h1>rxnfit.expdata_reader module<a class="headerlink" href="#module-rxnfit.expdata_reader" title="Link to this heading"></a></h1>
-<p>Load experimental time-course data from DataFrames.</p>
-<p>Experimental data is passed as a list of DataFrames and returned as a list
-of (t_list, C_exp_list) tuples. Functions handle missing values and align
-data to ODE function names order. Time column (0th column) unit and
-consistency across DataFrames are also provided.</p>
+<p>Load experimental time courses and align them with ODE species order.</p>
+<p>Splits <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> inputs into valid (time, concentration) series per
+species, drops NaNs consistently, and reorders columns to match
+<code class="docutils literal notranslate"><span class="pre">function_names</span></code> from the kinetic model.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.expdata_reader.align_expdata_to_function_names">
 <span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_reader.</span></span><span class="sig-name descname"><span class="pre">align_expdata_to_function_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C_exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_reader.align_expdata_to_function_names" title="Link to this definition"></a></dt>
@@ -272,7 +274,7 @@ Each array contains only the valid concentration values.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="rxnfit.solv_ode.html" class="btn btn-neutral float-left" title="rxnfit.solv_ode module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rxnfit.expdata_fit_sci.html" class="btn btn-neutral float-right" title="rxnfit.expdata_fit_sci module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="rxnfit.expdata_fit.html" class="btn btn-neutral float-right" title="rxnfit.expdata_fit module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

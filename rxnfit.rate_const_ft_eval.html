@@ -53,10 +53,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -85,10 +88,10 @@
              
   <section id="module-rxnfit.rate_const_ft_eval">
 <span id="rxnfit-rate-const-ft-eval-module"></span><h1>rxnfit.rate_const_ft_eval module<a class="headerlink" href="#module-rxnfit.rate_const_ft_eval" title="Link to this heading"></a></h1>
-<p>Rate constant evaluator for time-dependent k(t).</p>
-<p>“ft” in the module name stands for f(t), i.e. rate constants as functions of time.
-Builds a callable (t, params) -&gt; dict of rate constant values for use in ODE
-integration and fitting when rate constants depend on time t and/or other parameters.</p>
+<p>Time-dependent rate constants <code class="docutils literal notranslate"><span class="pre">k(t)</span></code> and helpers for evaluation.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ft</span></code> suffix denotes <code class="docutils literal notranslate"><span class="pre">f(t)</span></code>: rate expressions may depend on time and on
+free parameters. Provides <a class="reference internal" href="#rxnfit.rate_const_ft_eval.has_time_dependent_rates" title="rxnfit.rate_const_ft_eval.has_time_dependent_rates"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_time_dependent_rates()</span></code></a> and
+<a class="reference internal" href="#rxnfit.rate_const_ft_eval.build_evaluator" title="rxnfit.rate_const_ft_eval.build_evaluator"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_evaluator()</span></code></a> for SymPy rate tables used by ODE builders and fitters.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.rate_const_ft_eval.build_evaluator">
 <span class="sig-prename descclassname"><span class="pre">rxnfit.rate_const_ft_eval.</span></span><span class="sig-name descname"><span class="pre">build_evaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate_consts_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbolic_rate_const_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_rate_consts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.rate_const_ft_eval.build_evaluator" title="Link to this definition"></a></dt>

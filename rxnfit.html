@@ -47,10 +47,13 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -87,32 +90,28 @@
 <li class="toctree-l2"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.create_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.create_ode_system_with_rate_consts"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system_with_rate_consts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.get_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.debug_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.debug_ode_system()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.get_numbalsoda_sympy_spec"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_numbalsoda_sympy_spec()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.get_ode_info"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#id0"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#id3"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.create_ode_system_with_rate_consts()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#id8"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.debug_ode_system()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#id9"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#id10"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.get_ode_system"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_ode_system()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.RxnODEbuild.get_symbolic_rate_const_keys"><code class="docutils literal notranslate"><span class="pre">RxnODEbuild.get_symbolic_rate_const_keys()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="rxnfit.build_ode.html#rxnfit.build_ode.create_system_rhs"><code class="docutils literal notranslate"><span class="pre">create_system_rhs()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci.get_fitted_rate_const_dict"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci.get_fitted_rate_const_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci.get_solver_config_args"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci.get_solver_config_args()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci.plot_fitted_solution"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci.plot_fitted_solution()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci.run_fit"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci.run_fit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.ExpDataFitSci.to_dataframe_list"><code class="docutils literal notranslate"><span class="pre">ExpDataFitSci.to_dataframe_list()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit"><code class="docutils literal notranslate"><span class="pre">ExpDataFit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.get_fitted_rate_const_dict"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.get_fitted_rate_const_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.get_solver_config_args"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.get_solver_config_args()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.plot_fitted_solution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.run_fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.to_dataframe_list"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.to_dataframe_list()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.run_fit_multi"><code class="docutils literal notranslate"><span class="pre">run_fit_multi()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.solve_fit_model"><code class="docutils literal notranslate"><span class="pre">solve_fit_model()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit_sci.html#rxnfit.expdata_fit_sci.solve_fit_model_multi"><code class="docutils literal notranslate"><span class="pre">solve_fit_model_multi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.run_fit_multi"><code class="docutils literal notranslate"><span class="pre">run_fit_multi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.solve_fit_model"><code class="docutils literal notranslate"><span class="pre">solve_fit_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.solve_fit_model_multi"><code class="docutils literal notranslate"><span class="pre">solve_fit_model_multi()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a><ul>
@@ -127,6 +126,14 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="rxnfit.fit_metrics.html#rxnfit.fit_metrics.expdata_df_to_datasets"><code class="docutils literal notranslate"><span class="pre">expdata_df_to_datasets()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="rxnfit.fit_metrics.html#rxnfit.fit_metrics.fit_metrics"><code class="docutils literal notranslate"><span class="pre">fit_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.lsoda_p_vector.html#rxnfit.lsoda_p_vector.build_lsoda_parameter_vector_p"><code class="docutils literal notranslate"><span class="pre">build_lsoda_parameter_vector_p()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html#rxnfit.numbalsoda_rhs.compile_numbalsoda_rhs_for_builder"><code class="docutils literal notranslate"><span class="pre">compile_numbalsoda_rhs_for_builder()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a><ul>
@@ -200,11 +207,29 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.LsodaImplicitTEvalMode"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.LsodaImplicitTEvalMode.COMPUTE_RSS"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.COMPUTE_RSS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.LsodaImplicitTEvalMode.EVAL_ODE_FIT"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.EVAL_ODE_FIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.LsodaImplicitTEvalMode.INTEGRATE_DATASETS"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.INTEGRATE_DATASETS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.LsodaImplicitTEvalMode.SOLVE_SYSTEM"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.SOLVE_SYSTEM</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.build_t_eval_when_none_for_lsoda"><code class="docutils literal notranslate"><span class="pre">build_t_eval_when_none_for_lsoda()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode"><code class="docutils literal notranslate"><span class="pre">solve_ode()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-rxnfit">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-rxnfit" title="Link to this heading"></a></h2>
+<p>Reaction-kinetics ODE construction, integration, and fitting.</p>
+<p>This package builds ordinary differential equation (ODE) models from
+elementary reaction CSVs and integrates or fits them numerically.
+<a class="reference internal" href="rxnfit.solv_ode.html#rxnfit.solv_ode.SolverConfig" title="rxnfit.solv_ode.SolverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">rxnfit.solv_ode.SolverConfig</span></code></a> and <a class="reference internal" href="rxnfit.solv_ode.html#rxnfit.solv_ode.RxnODEsolver" title="rxnfit.solv_ode.RxnODEsolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">rxnfit.solv_ode.RxnODEsolver</span></code></a>
+are imported explicitly below; symbols from <a class="reference internal" href="rxnfit.rxn_reader.html#module-rxnfit.rxn_reader" title="rxnfit.rxn_reader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rxnfit.rxn_reader</span></code></a> and
+<a class="reference internal" href="rxnfit.build_ode.html#module-rxnfit.build_ode" title="rxnfit.build_ode"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rxnfit.build_ode</span></code></a> populate the default namespace via star imports.</p>
 </section>
 </section>
 

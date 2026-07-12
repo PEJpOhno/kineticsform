@@ -71,10 +71,13 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -103,6 +106,10 @@
              
   <section id="module-rxnfit.rxn_reader">
 <span id="rxnfit-rxn-reader-module"></span><h1>rxnfit.rxn_reader module<a class="headerlink" href="#module-rxnfit.rxn_reader" title="Link to this heading"></a></h1>
+<p>Parse reaction CSVs and derive symbolic kinetic ODEs.</p>
+<p>Loads elementary reactions in spreadsheet form, resolves species and rate
+identifiers, and builds <a class="reference internal" href="#rxnfit.rxn_reader.RxnToODE" title="rxnfit.rxn_reader.RxnToODE"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnToODE</span></code></a> systems for downstream numerical
+builders in <a class="reference internal" href="rxnfit.build_ode.html#module-rxnfit.build_ode" title="rxnfit.build_ode"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rxnfit.build_ode</span></code></a>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="rxnfit.rxn_reader.RxnToODE">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rxnfit.rxn_reader.</span></span><span class="sig-name descname"><span class="pre">RxnToODE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.rxn_reader.RxnToODE" title="Link to this definition"></a></dt>

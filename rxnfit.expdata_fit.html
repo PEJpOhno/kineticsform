@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rxnfit.expdata_fit module &mdash; rxnfit 20260314 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=26b0130d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rxnfit.p0_opt_fit module" href="rxnfit.p0_opt_fit.html" />
+    <link rel="prev" title="rxnfit.expdata_reader module" href="rxnfit.expdata_reader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            rxnfit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.rxn_reader.html">rxnfit.rxn_reader module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.build_ode.html">rxnfit.build_ode module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">rxnfit.expdata_fit module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit"><code class="docutils literal notranslate"><span class="pre">ExpDataFit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.get_fitted_rate_const_dict"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.get_fitted_rate_const_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.get_solver_config_args"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.get_solver_config_args()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.plot_fitted_solution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.run_fit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.to_dataframe_list"><code class="docutils literal notranslate"><span class="pre">ExpDataFit.to_dataframe_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.expdata_fit.run_fit_multi"><code class="docutils literal notranslate"><span class="pre">run_fit_multi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.expdata_fit.solve_fit_model"><code class="docutils literal notranslate"><span class="pre">solve_fit_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.expdata_fit.solve_fit_model_multi"><code class="docutils literal notranslate"><span class="pre">solve_fit_model_multi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">rxnfit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">rxnfit.expdata_fit module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rxnfit.expdata_fit.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rxnfit.expdata_fit">
+<span id="rxnfit-expdata-fit-module"></span><h1>rxnfit.expdata_fit module<a class="headerlink" href="#module-rxnfit.expdata_fit" title="Link to this heading"></a></h1>
+<p>Estimate unknown rate constants from experimental concentration trajectories.</p>
+<p>Minimizers in <code class="docutils literal notranslate"><span class="pre">scipy.optimize</span></code> drive repeated ODE integrations through
+<a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode" title="rxnfit.solver_backend.solve_ode"><code class="xref py py-func docutils literal notranslate"><span class="pre">rxnfit.solver_backend.solve_ode()</span></code></a>; see there for LSODA / numbalsoda
+behavior and SciPy fallbacks.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">ExpDataFit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>High-level façade over pooled least-squares fits and post-fit replay.</p>
+<p>Internally drives <a class="reference internal" href="#rxnfit.expdata_fit.solve_fit_model_multi" title="rxnfit.expdata_fit.solve_fit_model_multi"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_fit_model_multi()</span></code></a> and exposes helpers compatible
+with <a class="reference internal" href="rxnfit.solv_ode.html#rxnfit.solv_ode.RxnODEsolver" title="rxnfit.solv_ode.RxnODEsolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">RxnODEsolver</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.get_fitted_rate_const_dict">
+<span class="sig-name descname"><span class="pre">get_fitted_rate_const_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.get_fitted_rate_const_dict" title="Link to this definition"></a></dt>
+<dd><p>Map symbolic names to optimized numeric rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result</strong> – External <code class="docutils literal notranslate"><span class="pre">OptimizeResult</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to reuse cached output.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Plain dict mergeable back into <code class="docutils literal notranslate"><span class="pre">builded_rxnode.rate_consts_dict</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Missing prior optimization state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.get_solver_config_args">
+<span class="sig-name descname"><span class="pre">get_solver_config_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.get_solver_config_args" title="Link to this definition"></a></dt>
+<dd><p>Build kwargs for <a class="reference internal" href="rxnfit.solv_ode.html#rxnfit.solv_ode.SolverConfig" title="rxnfit.solv_ode.SolverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SolverConfig</span></code></a> post-fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset_index</strong> – Which pooled dataset supplies <code class="docutils literal notranslate"><span class="pre">y0</span></code>/<code class="docutils literal notranslate"><span class="pre">t0</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping with <code class="docutils literal notranslate"><span class="pre">y0</span></code>, <code class="docutils literal notranslate"><span class="pre">t_span</span></code>, integrator knobs, plus optional
+callable rate hooks for time-dependent kinetics.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a> has not finished and stored state, or
+    (when kinetics are time-dependent) <code class="docutils literal notranslate"><span class="pre">_result</span></code> is missing before
+    building the evaluator.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution">
+<span class="sig-name descname"><span class="pre">plot_fitted_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdata_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot_layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution" title="Link to this definition"></a></dt>
+<dd><p>Replay best parameters with overlays mirroring <code class="docutils literal notranslate"><span class="pre">plot_time_course_solutions</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expdata_df</strong> – Optional replacement overlay tables; defaults to inputs.</p></li>
+<li><p><strong>plot_datasets</strong> – Subset selector against <code class="docutils literal notranslate"><span class="pre">df_names</span></code>.</p></li>
+<li><p><strong>species</strong> – Restrict plotted columns; <code class="docutils literal notranslate"><span class="pre">None</span></code> keeps all.</p></li>
+<li><p><strong>subplot_layout</strong> – Manual subplot grid sizing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Missing fit artifacts.</p></li>
+<li><p><strong>ValueError</strong> – Unknown dataset labels or dataframe shape mismatches.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.run_fit">
+<span class="sig-name descname"><span class="pre">run_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="Link to this definition"></a></dt>
+<dd><p>Optimize rate constants via <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p0</strong> – Sequence aligned with symbolic keys or explicit name→value mapping.
+Log-space mode rejects non-positive entries.</p></li>
+<li><p><strong>opt_method</strong> – SciPy method string forwarded unchanged.</p></li>
+<li><p><strong>bounds</strong> – Box constraints for linear mode; superseded under log-fit.</p></li>
+<li><p><strong>verbose</strong> – Toggle progress printing.</p></li>
+<li><p><strong>use_log_fit</strong> – Optimize <code class="docutils literal notranslate"><span class="pre">log(k)</span></code> internally while exposing linear <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>lower_bound</strong> – Optional shared positivity floor (mode dependent).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(OptimizeResult-like,</span> <span class="pre">param_info,</span> <span class="pre">metrics_dict)</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Invalid seeds, bounds, or incompatible log guesses.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.to_dataframe_list">
+<span class="sig-name descname"><span class="pre">to_dataframe_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.to_dataframe_list" title="Link to this definition"></a></dt>
+<dd><p>Materialize every replayed trajectory via <code class="xref py py-func docutils literal notranslate"><span class="pre">_ode_result_to_dataframe()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_column_name</strong> – Leading column label for timestamps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parallel list mixing <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> entries and <code class="docutils literal notranslate"><span class="pre">None</span></code> holes.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Missing optimized state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.run_fit_multi">
+<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">run_fit_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.run_fit_multi" title="Link to this definition"></a></dt>
+<dd><p>Stateful-free shortcut constructing <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit" title="rxnfit.expdata_fit.ExpDataFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpDataFit</span></code></a> then <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">t_range</span></code> is omitted it becomes the min/max of the first dataframe’s time column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>builded_rxnode</strong> – Reaction scaffold.</p></li>
+<li><p><strong>df_list</strong> – Experimental bundle.</p></li>
+<li><p><strong>p0</strong> – Seeds understood by <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExpDataFit.run_fit()</span></code></a>.</p></li>
+<li><p><strong>t_range</strong> – Optional manual span tuple.</p></li>
+<li><p><strong>method</strong> – Forwarded to the constructor.</p></li>
+<li><p><strong>rtol</strong> – Forwarded to the constructor.</p></li>
+<li><p><strong>df_names</strong> – Forwarded to the constructor.</p></li>
+<li><p><strong>opt_method</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+<li><p><strong>bounds</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+<li><p><strong>verbose</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+<li><p><strong>use_log_fit</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+<li><p><strong>lower_bound</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Same triple as <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExpDataFit.run_fit()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Validation errors bubbled up from pooling or SciPy phases.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.solve_fit_model">
+<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">solve_fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_initial_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.solve_fit_model" title="Link to this definition"></a></dt>
+<dd><p>Build <code class="docutils literal notranslate"><span class="pre">f(t,</span> <span class="pre">*params)</span></code> that predicts species trajectories during fitting.</p>
+<p>Bare symbolic rate constants (<code class="docutils literal notranslate"><span class="pre">Symbol</span></code>) are optimized via <code class="docutils literal notranslate"><span class="pre">params</span></code>; every
+other <code class="docutils literal notranslate"><span class="pre">rate_consts_dict</span></code> entry (numbers, expressions, etc.) stays in the
+merged constants dict passed to the RHS. <code class="docutils literal notranslate"><span class="pre">fixed_initial_values</span></code> are fixed ICs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>builded_rxnode</strong> – Configured reaction network.</p></li>
+<li><p><strong>fixed_initial_values</strong> – Species IC vector aligned with <code class="docutils literal notranslate"><span class="pre">function_names</span></code>.</p></li>
+<li><p><strong>t_span</strong> – Global integration window covering every experimental time.</p></li>
+<li><p><strong>method</strong> – Passed through to <a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode" title="rxnfit.solver_backend.solve_ode"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_ode()</span></code></a>.</p></li>
+<li><p><strong>rtol</strong> – Relative tolerance for integrations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>functools.partial wrapping <code class="xref py py-func docutils literal notranslate"><span class="pre">_eval_ode_fit()</span></code> plus a <code class="docutils literal notranslate"><span class="pre">param_info</span></code>
+dict attached as attribute <code class="docutils literal notranslate"><span class="pre">param_info</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Wrong IC length versus species count.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rxnfit.expdata_fit.solve_fit_model_multi">
+<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">solve_fit_model_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.solve_fit_model_multi" title="Link to this definition"></a></dt>
+<dd><p>Prepare multi-experiment residuals sharing one kinetic parameter vector.</p>
+<p>Each DataFrame yields its own <code class="docutils literal notranslate"><span class="pre">(y0,</span> <span class="pre">t0)</span></code>; integrations stop at <code class="docutils literal notranslate"><span class="pre">t_span[1]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>builded_rxnode</strong> – Configured reaction network.</p></li>
+<li><p><strong>df_list</strong> – Homogeneous experimental tables (time + species columns).</p></li>
+<li><p><strong>t_span</strong> – Global window enclosing every observation time.</p></li>
+<li><p><strong>method</strong> – Passed to <a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode" title="rxnfit.solver_backend.solve_ode"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_ode()</span></code></a>.</p></li>
+<li><p><strong>rtol</strong> – Relative integration tolerance.</p></li>
+<li><p><strong>df_names</strong> – Optional labels; see <code class="xref py py-func docutils literal notranslate"><span class="pre">_resolve_df_names()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(residual_func,</span> <span class="pre">param_info,</span> <span class="pre">fit_ctx)</span></code> where <code class="docutils literal notranslate"><span class="pre">residual_func(params)</span></code>
+returns the summed squared error and <code class="docutils literal notranslate"><span class="pre">fit_ctx</span></code> backs plotting helpers.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Empty <code class="docutils literal notranslate"><span class="pre">df_list</span></code> or invalid column layout.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rxnfit.expdata_reader.html" class="btn btn-neutral float-left" title="rxnfit.expdata_reader module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rxnfit.p0_opt_fit.html" class="btn btn-neutral float-right" title="rxnfit.p0_opt_fit module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2026, Mitsuru Ohno.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

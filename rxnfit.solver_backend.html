@@ -1,0 +1,232 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rxnfit.solver_backend module &mdash; rxnfit 20260314 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=26b0130d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rxnfit.lsoda_p_vector module" href="rxnfit.lsoda_p_vector.html" />
+    <link rel="prev" title="rxnfit.plot_results module" href="rxnfit.plot_results.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            rxnfit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.rxn_reader.html">rxnfit.rxn_reader module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.build_ode.html">rxnfit.build_ode module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.plot_results.html">rxnfit.plot_results module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">rxnfit.solver_backend module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.COMPUTE_RSS"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.COMPUTE_RSS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.EVAL_ODE_FIT"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.EVAL_ODE_FIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.INTEGRATE_DATASETS"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.INTEGRATE_DATASETS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.SOLVE_SYSTEM"><code class="docutils literal notranslate"><span class="pre">LsodaImplicitTEvalMode.SOLVE_SYSTEM</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.solver_backend.build_t_eval_when_none_for_lsoda"><code class="docutils literal notranslate"><span class="pre">build_t_eval_when_none_for_lsoda()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rxnfit.solver_backend.solve_ode"><code class="docutils literal notranslate"><span class="pre">solve_ode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">rxnfit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">rxnfit.solver_backend module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rxnfit.solver_backend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rxnfit.solver_backend">
+<span id="rxnfit-solver-backend-module"></span><h1>rxnfit.solver_backend module<a class="headerlink" href="#module-rxnfit.solver_backend" title="Link to this heading"></a></h1>
+<p>Central ODE driver: SciPy <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> with optional numbalsoda for LSODA.</p>
+<p>Implements the integration policy described in <code class="docutils literal notranslate"><span class="pre">docs/spec_docs/numbalsoda2.md</span></code>.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Numbalsoda is considered only for <code class="docutils literal notranslate"><span class="pre">method=&quot;LSODA&quot;</span></code>, non-time-dependent
+rate laws, and a non-empty <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> grid.</p></li>
+<li><p>Import failures, unsupported RHS, or integrator errors trigger a
+one-time <code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code> (per reason) and fall back to RK45 via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp()</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code> is true, LSODA requests are coerced to RK45
+without calling numbalsoda.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.LsodaImplicitTEvalMode">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rxnfit.solver_backend.</span></span><span class="sig-name descname"><span class="pre">LsodaImplicitTEvalMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Implicit <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> construction mode for LSODA (names are part of the API).</p>
+<p>Each member selects the grid recipe documented in numbalsoda2.md section 5.5.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.LsodaImplicitTEvalMode.COMPUTE_RSS">
+<span class="sig-name descname"><span class="pre">COMPUTE_RSS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.COMPUTE_RSS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.LsodaImplicitTEvalMode.EVAL_ODE_FIT">
+<span class="sig-name descname"><span class="pre">EVAL_ODE_FIT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></span><a class="headerlink" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.EVAL_ODE_FIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.LsodaImplicitTEvalMode.INTEGRATE_DATASETS">
+<span class="sig-name descname"><span class="pre">INTEGRATE_DATASETS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.INTEGRATE_DATASETS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.LsodaImplicitTEvalMode.SOLVE_SYSTEM">
+<span class="sig-name descname"><span class="pre">SOLVE_SYSTEM</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode.SOLVE_SYSTEM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.build_t_eval_when_none_for_lsoda">
+<span class="sig-prename descclassname"><span class="pre">rxnfit.solver_backend.</span></span><span class="sig-name descname"><span class="pre">build_t_eval_when_none_for_lsoda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rxnfit.solver_backend.LsodaImplicitTEvalMode" title="rxnfit.solver_backend.LsodaImplicitTEvalMode"><span class="pre">LsodaImplicitTEvalMode</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_exp_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#rxnfit.solver_backend.build_t_eval_when_none_for_lsoda" title="Link to this definition"></a></dt>
+<dd><p>Build a sorted unique <code class="docutils literal notranslate"><span class="pre">float64</span></code> time grid for LSODA when <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> is omitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – Which recipe to apply (<code class="docutils literal notranslate"><span class="pre">SOLVE_SYSTEM</span></code>, <code class="docutils literal notranslate"><span class="pre">COMPUTE_RSS</span></code>, etc.).</p></li>
+<li><p><strong>t_span</strong> – Required for <code class="docutils literal notranslate"><span class="pre">SOLVE_SYSTEM</span></code> and <code class="docutils literal notranslate"><span class="pre">INTEGRATE_DATASETS</span></code> as <code class="docutils literal notranslate"><span class="pre">(t0,</span> <span class="pre">t1)</span></code>.</p></li>
+<li><p><strong>t_start</strong> – Dataset start time for <code class="docutils literal notranslate"><span class="pre">INTEGRATE_DATASETS</span></code>.</p></li>
+<li><p><strong>t_exp_col</strong> – Experimental times for <code class="docutils literal notranslate"><span class="pre">COMPUTE_RSS</span></code>.</p></li>
+<li><p><strong>t_exp</strong> – Concatenated experimental times for <code class="docutils literal notranslate"><span class="pre">INTEGRATE_DATASETS</span></code>.</p></li>
+<li><p><strong>t_points</strong> – Observation times for <code class="docutils literal notranslate"><span class="pre">EVAL_ODE_FIT</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One-dimensional <code class="docutils literal notranslate"><span class="pre">float64</span></code> array in non-decreasing order with duplicates removed.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If required keyword arguments for <code class="docutils literal notranslate"><span class="pre">mode</span></code> are missing or invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rxnfit.solver_backend.solve_ode">
+<span class="sig-prename descclassname"><span class="pre">rxnfit.solver_backend.</span></span><span class="sig-name descname"><span class="pre">solve_ode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system_rhs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_dependent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.solver_backend.solve_ode" title="Link to this definition"></a></dt>
+<dd><p>Integrate <code class="docutils literal notranslate"><span class="pre">dy/dt</span> <span class="pre">=</span> <span class="pre">system_rhs(t,</span> <span class="pre">y)</span></code> via SciPy or numbalsoda.</p>
+<p>Non-LSODA methods delegate to <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp()</span></code>. For
+<code class="docutils literal notranslate"><span class="pre">method=&quot;LSODA&quot;</span></code>, see <code class="docutils literal notranslate"><span class="pre">docs/spec_docs/numbalsoda2.md</span></code>: effective
+<code class="docutils literal notranslate"><span class="pre">t_span</span></code> follows <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> when rates are not time-dependent; callers
+must supply <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> or build it with <a class="reference internal" href="#rxnfit.solver_backend.build_t_eval_when_none_for_lsoda" title="rxnfit.solver_backend.build_t_eval_when_none_for_lsoda"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_t_eval_when_none_for_lsoda()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system_rhs</strong> – Callable <code class="docutils literal notranslate"><span class="pre">(t,</span> <span class="pre">y)</span></code> returning <code class="docutils literal notranslate"><span class="pre">dy/dt</span></code> (SciPy convention).</p></li>
+<li><p><strong>t_span</strong> – Interval <code class="docutils literal notranslate"><span class="pre">(t0,</span> <span class="pre">t1)</span></code>. For LSODA with <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> supplied, the
+solver uses the min/max of <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> internally (spec section 5.2).</p></li>
+<li><p><strong>y0</strong> – Initial state vector.</p></li>
+<li><p><strong>t_eval</strong> – Times where the solution is sampled. Required for LSODA (non-empty
+unless falling back to RK45 for an empty grid).</p></li>
+<li><p><strong>method</strong> – <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> method name, or <code class="docutils literal notranslate"><span class="pre">&quot;LSODA&quot;</span></code> to try numbalsoda.</p></li>
+<li><p><strong>rtol</strong> – Relative integration tolerance.</p></li>
+<li><p><strong>atol</strong> – Absolute tolerance; <code class="docutils literal notranslate"><span class="pre">None</span></code> selects library defaults.</p></li>
+<li><p><strong>time_dependent</strong> – If True, LSODA is coerced to RK45 (internal callers set
+this from the kinetic model).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object compatible with <code class="docutils literal notranslate"><span class="pre">scipy.integrate.OdeResult</span></code> (<code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>,
+<code class="docutils literal notranslate"><span class="pre">success</span></code>, <code class="docutils literal notranslate"><span class="pre">message</span></code>, …).</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Direct callers must set <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code> only when rates depend
+on time (callable dict branch or <code class="docutils literal notranslate"><span class="pre">has_time_dependent_rates</span></code>); otherwise
+behavior is undefined (see numbalsoda2.md section 14).</p>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rxnfit.plot_results.html" class="btn btn-neutral float-left" title="rxnfit.plot_results module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rxnfit.lsoda_p_vector.html" class="btn btn-neutral float-right" title="rxnfit.lsoda_p_vector module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2026, Mitsuru Ohno.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

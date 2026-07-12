@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rxnfit.solver_backend module" href="rxnfit.solver_backend.html" />
     <link rel="prev" title="rxnfit.fit_metrics module" href="rxnfit.fit_metrics.html" /> 
 </head>
 
@@ -48,13 +49,16 @@
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.rate_const_ft_eval.html">rxnfit.rate_const_ft_eval module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.solv_ode.html">rxnfit.solv_ode module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_reader.html">rxnfit.expdata_reader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit_sci.html">rxnfit.expdata_fit_sci module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.expdata_fit.html">rxnfit.expdata_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.p0_opt_fit.html">rxnfit.p0_opt_fit module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rxnfit.fit_metrics.html">rxnfit.fit_metrics module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">rxnfit.plot_results module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#rxnfit.plot_results.plot_time_course_solutions"><code class="docutils literal notranslate"><span class="pre">plot_time_course_solutions()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.solver_backend.html">rxnfit.solver_backend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.lsoda_p_vector.html">rxnfit.lsoda_p_vector module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rxnfit.numbalsoda_rhs.html">rxnfit.numbalsoda_rhs module</a></li>
 </ul>
 
         </div>
@@ -83,11 +87,10 @@
              
   <section id="module-rxnfit.plot_results">
 <span id="rxnfit-plot-results-module"></span><h1>rxnfit.plot_results module<a class="headerlink" href="#module-rxnfit.plot_results" title="Link to this heading"></a></h1>
-<p>Plot time-course results of ODE solutions.</p>
-<p>This module provides plotting functions for reaction kinetics simulation
-results. Used by RxnODEsolver.solution_plot() and ExpDataFitSci.plot_fitted_solution(),
-and can be used directly by other features (e.g. sensitivity analysis,
-uncertainty visualization).</p>
+<p>Matplotlib helpers for simulated or fitted concentration time courses.</p>
+<p>Primary call sites are <a class="reference internal" href="rxnfit.solv_ode.html#rxnfit.solv_ode.RxnODEsolver.solution_plot" title="rxnfit.solv_ode.RxnODEsolver.solution_plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rxnfit.solv_ode.RxnODEsolver.solution_plot()</span></code></a> and
+<a class="reference internal" href="rxnfit.expdata_fit.html#rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution" title="rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rxnfit.expdata_fit.ExpDataFit.plot_fitted_solution()</span></code></a>; the functions here
+accept generic solution objects and optional experimental overlays.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.plot_results.plot_time_course_solutions">
 <span class="sig-prename descclassname"><span class="pre">rxnfit.plot_results.</span></span><span class="sig-name descname"><span class="pre">plot_time_course_solutions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot_layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#rxnfit.plot_results.plot_time_course_solutions" title="Link to this definition"></a></dt>
@@ -132,6 +135,7 @@ if there are no successful integrations to plot.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="rxnfit.fit_metrics.html" class="btn btn-neutral float-left" title="rxnfit.fit_metrics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rxnfit.solver_backend.html" class="btn btn-neutral float-right" title="rxnfit.solver_backend module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
