@@ -11,8 +11,10 @@
 | 1 | TSS の「平均」 | **化学種ごと**（後述の定義を採用） |
 | 2 | 複数データセット時の R² | **全体で 1 つだけ**返す |
 | 3 | 有効点の一致 | **明文化する**（後述の仕様文を採用） |
+| 4 | RSS・TSS・R² のまとまりの戻り値の型 | **dict**（キー `'rss'`, `'tss'`, `'r2'`）。`eval_fit_metrics`、P0OptFit の第二戻り値、`run_fit` の第三戻り値で同じ形に揃える。 |
 | 5 | TSS ≈ 0 のとき | **警告のみ**出し、R² は計算して返す |
 | 6 | 重みづけ | R² は将来 **重み付き RSS/TSS** で定義する予定。**現状は重みなし**で仕様化 |
+| 7 | `run_fit` / `run_fit_multi` の戻りと指標の格納 | 戻りは **`(result, param_info, fit_metrics)` の 3 つ**。`fit_metrics` に rss / tss / r2 を集約。`result` にも `tss`, `r2` 属性を付与（RSS は `result.fun` のみ）。verbose 表示は `fit_metrics` を参照。 |
 | 8 | eval_fit_metrics のオプション | 現在の `rss` の **recompute をそのまま持たせる** |
 | 9 | P0OptFit.optimize の戻り値 | **提案通り** `(out_dict, fit_metrics)`。fit_metrics は dict でキー `'rss'`, `'tss'`, `'r2'` を含む。 |
 
@@ -37,8 +39,8 @@
 ## 3. 有効点の定義の一致（決定：明文化する）
 
 - **仕様として明文化する内容**  
-  「RSS および TSS（したがって R²）は、**RSS を計算しているのと同じ有効点の集合だけ**を使って計算する。すなわち、時間または濃度が欠損（NaN）である (t, 化学種) は RSS にも TSS にも含めない。solv_ode と expdata_fit_sci のいずれでも、この有効点の定義を同じにする。」
-- 実装時には、solv_ode 側（行・列の走査で NaN を skip）と expdata_fit_sci 側（種ごとの t_list[i], C_exp_list[i]）で、同じ実験データに対して同じ点集合が得られることを前提にし、上記を仕様・コメントに書いておく。
+  「RSS および TSS（したがって R²）は、**RSS を計算しているのと同じ有効点の集合だけ**を使って計算する。すなわち、時間または濃度が欠損（NaN）である (t, 化学種) は RSS にも TSS にも含めない。solv_ode と expdata_fit のいずれでも、この有効点の定義を同じにする。」
+- 実装時には、solv_ode 側（行・列の走査で NaN を skip）と expdata_fit 側（種ごとの t_list[i], C_exp_list[i]）で、同じ実験データに対して同じ点集合が得られることを前提にし、上記を仕様・コメントに書いておく。
 
 ---
 
@@ -72,17 +74,15 @@
 
 ### 4.4 他 API との「形の揃い方」という意味
 
-- **optimize** の第二戻り値を `(out_dict, {"rss": rss, "r2": r2})` にする、と決まっています。つまり「RSS と R² のまとまり」はすでに **dict** で返す形になっています。
-- すると、eval_fit_metrics の戻りも dict にすると、「RSS と R² の塊」を同じ型で扱えます。run_fit で R² を param_info に載せる場合、param_info はもともと dict なので、`param_info['r2']` のようにキーでアクセスすることになります。  
-  つまり、**「まとまり」を dict にすると、optimize の第二戻り値・param_info の使い方と揃う**という意味があります。
-- 逆に、eval_fit_metrics だけ NamedTuple で返すと、optimize の第二戻り値は dict のままなので、「RSS・R² の塊」が API ごとに dict だったり NamedTuple だったりすることになります。揃えるなら、optimize の第二戻り値も NamedTuple にするか、eval_fit_metrics も dict にするか、のどちらかになります。
+- **optimize** の第二戻り値は **`(out_dict, fit_metrics)`** で、`fit_metrics` は **`{'rss': ..., 'tss': ..., 'r2': ...}`** 形式の dict とする（実装済み）。
+- **eval_fit_metrics** も同じキーを持つ dict を返す。**run_fit** は第三戻り値として同形の `fit_metrics` を返し、`result.tss` / `result.r2` にも指標を載せ、verbose は `fit_metrics` を参照する。
+- いずれも **dict** に揃えることで、ログ出力や JSON 化、P0OptFit との受け渡しが一貫する。
 
-### 4.5 まとめ（意味の説明のみ。仕様の決定はこのあと）
+### 4.5 まとめ（検討の整理と採用結果）
 
-- 項目 4 は、**「RSS・TSS・R² を一まとまりで返すとき、そのまとまりを dict とするか NamedTuple とするか」**を決める話です。
-- dict にすると、キーでアクセスし、拡張・シリアライズに有利で、optimize の第二戻り値や param_info と形を揃えやすいです。
-- NamedTuple にすると、属性でアクセスし、型・補完・typo 防止に有利ですが、拡張時は型定義の変更が要り、他 API も同じ型に揃えるかどうかが問題になります。
-- **どちらを採用するかは、上記の意味を踏まえたうえで、仕様として別途決定する。**
+- 項目 4 は、**「RSS・TSS・R² を一まとまりで返すとき、そのまとまりを dict とするか NamedTuple とするか」**を決める話であった。
+- **実装では dict を採用**し、キー **`rss` / `tss` / `r2`** で統一した（§4.4・下記「実装メモ」参照）。
+- NamedTuple を選ばなかった理由として、キー追加の容易さ・JSON 化・`optimize` / `run_fit` / `eval_fit_metrics` 間での同型 dict の受け渡しを優先した。
 
 ---
 
@@ -200,7 +200,7 @@ run_fit の処理の流れで言うと、次のようになります。
 
 ---
 
-以上を仕様として実装に反映した。RSS と R² の意味・算出方法は一貫し、solv_ode（速度定数既知の経時変化）と expdata_fit_sci / P0OptFit（フィット後）の両方で同じ指標として扱える。
+以上を仕様として実装に反映した。RSS と R² の意味・算出方法は一貫し、solv_ode（速度定数既知の経時変化）と expdata_fit / P0OptFit（フィット後）の両方で同じ指標として扱える。
 
 ### 実装メモ（実施済み）
 

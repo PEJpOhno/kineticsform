@@ -38,8 +38,7 @@
 - 引数名は `rate_const_overrides` で統一し、`RxnODEbuild` のコンストラクタに追加する。
 - `rate_const_overrides_encoding` は、`rate_const_overrides` がファイルパス（str）のときだけ有効と docstring に記載する。
 - 引数として path を渡す場合は **CSV のみサポート**し、それ以外はエラー。
-
----
+- 上書き CSV を読み込むとき、`RxnODEbuild` の反応 CSV `encoding` が **`utf-8`** の場合、I/O では **`utf-8-sig`** を用いる（BOM 付き UTF-8 対応）。`rate_const_overrides_encoding` を path 読込時に指定した場合はその値を用いる（`None` のときはビルダーの `encoding` に従う）。
 
 ## 自由パラメータの扱い
 
@@ -64,9 +63,7 @@
 - `rate_const_values` / `symbolic_rate_const_keys` を組み立てる処理は  
   **run_fit() 実行後に行う**。
 
-- run_fit() 前に呼んだ場合はエラーとし、メッセージは以下とする：
-
-
+- **run_fit() を完了していない**状態で、当該状態を要する API（例: SolverConfig 用引数の組み立て）を呼び出した場合は**エラーとする**。例外の種類・メッセージ文面は仕様で固定せず、実装に委ねる（実装例: `RuntimeError` 等）。
 
 ---
 
@@ -78,8 +75,7 @@
   **速度定数つき ODE** として  
   `create_system_rhs(..., rate_const_values=..., symbolic_rate_const_keys=...)` を使う。
 
-- `solve_ivp` には  
-  `fun, y0, t_span, t_eval, method, rtol` のみを渡す。
+- 数値積分は **`solver_backend.solve_ode`** を経由する（`RxnODEsolver` 等から呼ばれる）。`solve_ode` のキーワード引数には **`atol`** および **`time_dependent`** もあり、内部で `scipy.integrate.solve_ivp` を使うときは **`atol` が非 `None` なら `solve_ivp` に転送**し得る。`method`・`rtol`・`t_span`・`t_eval`・`y0` および RHS callable は従来どおり渡す。
 
 - `create_system_rhs` で `rate_const_values` が callable のときは  
   `rate_const_values(t)` でその時点の dict を取得する。
@@ -105,12 +101,9 @@
 
 # 反応 CSV の速度定数列の扱い
 
-- 反応 CSV の速度定数列に `k2` などと書いた場合、  
-  その k の定義が別 CSV に存在すればそこで上書きする。
-
-- 存在しなければ現行どおり `Symbol("k2")` のまま（未定義のシンボル）。
-
-- 反応 CSV の速度定数が空欄の場合は、現行通りまず強制的に `k+RID` を設定する。
+- 反応 CSV の速度定数列（2 列目）の解釈は `rxn_reader.get_reactions` に従う。**レート辞書および `rate_constants()` のキーは常に `'k' + RID`（RID は CSV 1 列目の文字列）**。素反応の消費速度式に現れる記号も **`'k' + RID`** である。k 列が **空**なら値は文字列 **`'k' + RID`**（後段で SymPy 化）、**数値文字列**なら `float`、それ以外の文字列は式または別名としてパースされ、**値**として `k`+RID キーに格納される（式が他キーを参照する場合は `_build_rate_consts_sympy` の許可集合に依存し、未定義参照は `ValueError` になり得る）。
+- 速度定数定義 CSV（`k`, `f(t)`）で上書きできるのは、反応系に既に存在するキー（上記の `k`+RID および式から参照されるキー）に限る。定義が無いキーは反応 CSV 由来の値・式のまま（数値以外は SymPy の `Symbol` / `Expr` として保持）。
+- 反応 CSV の速度定数列が**空欄**のときは、値として **`'k' + RID`** を補完する（上記と同じ）。
 
 ---
 
@@ -120,7 +113,7 @@
 |------|------------------------|----------------|
 | 修正 | rxnfit/build_ode.py | - `RxnODEbuild.__init__` に `rate_const_overrides=None`, `rate_const_overrides_encoding=None` を追加。<br>- override CSV の読み込みを build_ode 内に実装（厳密ヘッダー、空行無視、# エラー、k 重複エラー、未定義 k エラー）。<br>- 読み込み直後に overrides を適用し dict を更新。<br>- 自由パラメータ構築時に t を除外。<br>- `create_system_rhs()` で callable の場合 `rate_const_values(t)` を使用。 |
 | 修正 | rxnfit/solv_ode.py | - SolverConfig に `rate_const_values`, `symbolic_rate_const_keys` を追加。<br>- 両方指定 or 両方省略のみ許可。<br>- solve_system で速度定数つき ODE 経路を追加。<br>- fit_metrics など積分系も同様。 |
-| 修正 | rxnfit/expdata_fit_sci.py | - `k(t)` の有無を自動判別。<br>- run_fit() 後のみ SolverConfig 引数を返す。<br>- 未実行時は指定メッセージでエラー。<br>- 評価器は rate_const_ft_eval を使用。 |
+| 修正 | rxnfit/expdata_fit.py | - `k(t)` の有無を自動判別。<br>- run_fit() 後のみ SolverConfig 引数を返す。<br>- 未実行時はエラー（メッセージは実装に委ねる）。<br>- 評価器は rate_const_ft_eval を使用。 |
 | 追加 | rxnfit/rate_const_ft_eval.py | - 新規モジュール。<br>- docstring に「ft = f(t)」。<br>- `(t, params)` → rate dict を返す callable を構築。 |
 | 追加 | （任意）rxnfit/__init__.py | - 必要に応じて公開 API を export。 |
 
