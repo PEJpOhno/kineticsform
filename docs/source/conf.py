@@ -19,7 +19,7 @@ project = 'rxnfit'
 copyright = '2023-2026, Mitsuru Ohno'
 author = 'Mitsuru Ohno'
 version = rxnfit.__version__
-release = '20260712'
+release = '20260814'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

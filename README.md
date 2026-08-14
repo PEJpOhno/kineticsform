@@ -11,7 +11,7 @@
 **How to cite :** Ohno, M. rxnfit. GitHub. https://github.com/PEJpOhno/rxnfit (2023).  
 
 ## Current version and requirements
-- current version = 0.4.0
+- current version = 0.4.1
 - python >=3.12
 
 [dependencies]
@@ -117,7 +117,7 @@ Fits symbolic rate constants to experimental data (scipy.optimize.minimize).
 
 | item | name | description |
 |------|------|-------------|
-| class | ExpDataFit | Fits symbolic rate constants to experimental time-course data (multi-dataset). Integration is routed through rxnfit solve_ode dispatcher (LSODA tries numbalsoda; unavailable path falls back to RK45). run_fit(p0, ...) returns (result, param_info, fit_metrics); result has .fun (RSS), .tss, .r2; fit_metrics has keys 'rss', 'tss', 'r2'. plot_fitted_solution(expdata_df, ...) plots fitted time-courses with per-dataset y0 after run_fit. |
+| class | ExpDataFit | Fits symbolic rate constants to experimental time-course data (multi-dataset). Integration is routed through rxnfit solve_ode dispatcher (LSODA tries numbalsoda; unavailable path falls back to RK45). run_fit(p0, ..., error_metric='rss'|'mae') returns (result, param_info, fit_metrics); result.fun is the minimized sum (RSS or SAE); fit_metrics has keys 'rss', 'tss', 'r2', 'rmse', 'mae', 'n_datapoints'. plot_fitted_solution(expdata_df, ...) plots fitted time-courses with per-dataset y0 after run_fit. |
 
 ### solv_ode
 Numerical integration and plotting of ODE solutions.
@@ -125,7 +125,7 @@ Numerical integration and plotting of ODE solutions.
 | item | name | description |
 |------|------|-------------|
 | class | SolverConfig | Dataclass holding integration settings: y0, t_span, t_eval, method, rtol. Optionally rate_const_values and symbolic_rate_const_keys for time-dependent or variable rate constants. |
-| class | RxnODEsolver | Integrates ODEs with a builder and SolverConfig through rxnfit solve_ode dispatcher. For method="LSODA", rxnfit tries numbalsoda and falls back to RK45 when unavailable. For other methods, scipy.solve_ivp is used. solution_plot() plots time-courses (optionally with experimental overlay). to_dataframe_list() returns a list of DataFrames (one per dataset). eval_fit_metrics(expdata_df, ...) returns a dict with 'rss', 'tss', 'r2'. |
+| class | RxnODEsolver | Integrates ODEs with a builder and SolverConfig through rxnfit solve_ode dispatcher. For method="LSODA", rxnfit tries numbalsoda and falls back to RK45 when unavailable. For other methods, scipy.solve_ivp is used. solution_plot() plots time-courses (optionally with experimental overlay). to_dataframe_list() returns a list of DataFrames (one per dataset). eval_fit_metrics(expdata_df, ...) returns a dict with 'rss', 'tss', 'r2', 'rmse', 'mae', 'n_datapoints'. |
 
 ### solver_backend
 Backend dispatch for ODE integration.
@@ -139,7 +139,7 @@ Optimizes initial parameter values (p0) for rate constants using Optuna, then fi
 
 | item | name | description |
 |------|------|-------------|
-| class | P0OptFit | Optimize initial parameter values (p0) for rate constants using Optuna, then run ExpDataFit. |
+| class | P0OptFit | Optimize initial parameter values (p0) for rate constants using Optuna, then run ExpDataFit. Constructor takes error_metric ('rss' or 'mae', default 'rss') for both the Optuna search and inner run_fit. optuna_log() entries use keys trial_No, params, error_metric, sum_error, state (sum_error is RSS or SAE). |
 
 ## References  
 

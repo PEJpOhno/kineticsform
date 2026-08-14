@@ -226,39 +226,134 @@ def _integrate_datasets_for_params(fit_ctx, params):
     return solution_list
 
 
-def _compute_multi_residual(params, fit_ctx):
-    """Scalar objective: summed squared errors over every dataset/species/time.
+# Allowed values for error_metric (lowercase only).
+_ALLOWED_ERROR_METRICS = ("rss", "mae")
+
+# SciPy minimize methods that use gradients (practical set for MAE warning).
+_GRADIENT_OPT_METHODS = frozenset({
+    "l-bfgs-b", "bfgs", "cg", "newton-cg", "tnc", "slsqp", "trust-constr",
+})
+
+
+def _validate_error_metric(error_metric):
+    """Return a validated lowercase error_metric string.
+
+    Args:
+        error_metric: Objective name; must be exactly ``'rss'`` or ``'mae'``.
+
+    Returns:
+        Validated metric string.
+
+    Raises:
+        ValueError: If ``error_metric`` is not an allowed lowercase name.
+    """
+    if error_metric not in _ALLOWED_ERROR_METRICS:
+        raise ValueError(
+            f"error_metric must be one of {_ALLOWED_ERROR_METRICS}, "
+            f"got {error_metric!r}."
+        )
+    return error_metric
+
+
+def _compute_multi_errors(params, fit_ctx):
+    """Accumulate RSS, SAE, and point count over every dataset/species/time.
 
     Args:
         params: Candidate constants in ``symbolic_rate_const_keys`` order.
         fit_ctx: Cached multi-dataset problem description.
 
     Returns:
-        Finite loss or ``numpy.inf`` if any trajectory is missing.
+        dict: Keys ``'rss'``, ``'sae'``, ``'n_datapoints'``. If any trajectory
+        is missing, ``rss`` and ``sae`` are ``numpy.inf`` and
+        ``n_datapoints`` is 0.
 
     Note:
         Model concentrations are interpolated to experimental timestamps.
+        Valid points match the NaN-filtered arrays in ``fit_ctx['datasets']``.
     """
     function_names = fit_ctx['function_names']
     datasets = fit_ctx['datasets']
 
     solution_list = _integrate_datasets_for_params(fit_ctx, params)
     if any(sol is None for sol in solution_list):
-        return np.inf
+        return {"rss": np.inf, "sae": np.inf, "n_datapoints": 0}
 
-    total_residual = 0.0
+    rss = 0.0
+    sae = 0.0
+    n_datapoints = 0
     for solution, ds in zip(solution_list, datasets):
         t_list = ds['t_list']
         C_exp_list = ds['C_exp_list']
         for i in range(len(function_names)):
-            t_i = t_list[i]
-            C_i = C_exp_list[i]
-            if len(t_i) == 0:
+            t_i = np.asarray(t_list[i], dtype=float)
+            C_i = np.asarray(C_exp_list[i], dtype=float)
+            if t_i.size == 0:
                 continue
+            mask = np.isfinite(t_i) & np.isfinite(C_i)
+            if not np.any(mask):
+                continue
+            t_i = t_i[mask]
+            C_i = C_i[mask]
             y_model_i = np.interp(t_i, solution.t, solution.y[i])
-            total_residual += np.sum((y_model_i - C_i) ** 2)
+            resid = y_model_i - C_i
+            rss += np.sum(resid ** 2)
+            sae += np.sum(np.abs(resid))
+            n_datapoints += int(np.size(resid))
 
-    return total_residual
+    return {"rss": float(rss), "sae": float(sae), "n_datapoints": n_datapoints}
+
+
+def _objective_from_errors(params, fit_ctx, error_metric):
+    """Scalar minimize objective selecting RSS or SAE from error dict.
+
+    Args:
+        params: Candidate constants in ``symbolic_rate_const_keys`` order.
+        fit_ctx: Cached multi-dataset problem description.
+        error_metric: ``'rss'`` or ``'mae'``. For ``'mae'``, the minimized
+            quantity is SAE (sum of absolute residuals), not mean absolute
+            error.
+
+    Returns:
+        float: RSS or SAE (may be ``numpy.inf`` when integration fails).
+    """
+    errors = _compute_multi_errors(params, fit_ctx)
+    if error_metric == "rss":
+        return errors["rss"]
+    return errors["sae"]
+
+
+def _print_fit_verbose(result, param_info, metrics, error_metric, x_values):
+    """Print success, fitted constants, and goodness-of-fit metrics."""
+    symbolic_keys = param_info['symbolic_rate_consts']
+    print(f"Optimization success: {result.success}")
+    print("Fitted rate constants:")
+    for k, v in zip(symbolic_keys, x_values):
+        print(f"  {k} = {v:.6g}")
+    print(f"error_metric: {error_metric}")
+    print(
+        f"MAE: {metrics['mae']:.6g}  "
+        f"RSS: {metrics['rss']:.6g}  "
+        f"R²: {metrics['r2']:.6g}  "
+        f"RMSE: {metrics['rmse']:.6g}"
+    )
+
+
+def _metrics_after_fit(fit_ctx, params):
+    """Re-evaluate errors at ``params`` and build the public metrics dict."""
+    errors = _compute_multi_errors(params, fit_ctx)
+    metrics = compute_fit_metrics(
+        fit_ctx['datasets'],
+        errors['rss'],
+        sae=errors['sae'],
+        n_datapoints=errors['n_datapoints'],
+    )
+    if metrics['tss'] < TSS_MIN_THRESHOLD:
+        warnings.warn(
+            "TSS is nearly zero; R² may be unreliable.",
+            UserWarning,
+            stacklevel=3,
+        )
+    return metrics
 
 
 def solve_fit_model(
@@ -328,8 +423,8 @@ def solve_fit_model(
 
 def solve_fit_model_multi(
         builded_rxnode, df_list, t_span,
-        method="RK45", rtol=1e-6, df_names=None):
-    """Prepare multi-experiment residuals sharing one kinetic parameter vector.
+        method="RK45", rtol=1e-6, df_names=None, error_metric="rss"):
+    """Prepare multi-experiment objective sharing one kinetic parameter vector.
 
     Each DataFrame yields its own ``(y0, t0)``; integrations stop at ``t_span[1]``.
 
@@ -340,17 +435,23 @@ def solve_fit_model_multi(
         method: Passed to :func:`~rxnfit.solver_backend.solve_ode`.
         rtol: Relative integration tolerance.
         df_names: Optional labels; see :func:`_resolve_df_names`.
+        error_metric: ``'rss'`` (minimize RSS) or ``'mae'`` (minimize SAE).
+            Only lowercase ``'rss'`` or ``'mae'`` are accepted. For ``'mae'``,
+            the optimizer minimizes the sum of absolute residuals (SAE);
+            reported MAE in fit metrics is SAE / n_datapoints.
 
     Returns:
-        ``(residual_func, param_info, fit_ctx)`` where ``residual_func(params)``
-        returns the summed squared error and ``fit_ctx`` backs plotting helpers.
+        ``(objective, param_info, fit_ctx)`` where ``objective(params)`` returns
+        the selected sum (RSS or SAE) and ``fit_ctx`` backs plotting helpers.
 
     Raises:
-        ValueError: Empty ``df_list`` or invalid column layout.
+        ValueError: Empty ``df_list``, invalid column layout, or bad
+            ``error_metric``.
     """
     if not df_list:
         raise ValueError("df_list cannot be empty.")
 
+    error_metric = _validate_error_metric(error_metric)
     resolved_df_names = _resolve_df_names(df_list, df_names)
 
     ode_construct = builded_rxnode.get_ode_system()
@@ -398,7 +499,11 @@ def solve_fit_model_multi(
             fixed_rate_consts,
         )
 
-    residual_func = functools.partial(_compute_multi_residual, fit_ctx=fit_ctx)
+    objective = functools.partial(
+        _objective_from_errors,
+        fit_ctx=fit_ctx,
+        error_metric=error_metric,
+    )
 
     param_info = {
         'symbolic_rate_consts': symbolic_rate_const_keys,
@@ -409,7 +514,7 @@ def solve_fit_model_multi(
         't0_list': t0_list,
     }
 
-    return residual_func, param_info, fit_ctx
+    return objective, param_info, fit_ctx
 
 
 def _normalize_p0(p0, param_info):
@@ -487,7 +592,7 @@ class ExpDataFit:
         self._fit_ctx = None
 
     def run_fit(self, p0, opt_method='L-BFGS-B', bounds=None, verbose=True,
-                use_log_fit=False, lower_bound=None):
+                use_log_fit=False, lower_bound=None, error_metric="rss"):
         """Optimize rate constants via :func:`scipy.optimize.minimize`.
 
         Args:
@@ -498,16 +603,40 @@ class ExpDataFit:
             verbose: Toggle progress printing.
             use_log_fit: Optimize ``log(k)`` internally while exposing linear ``k``.
             lower_bound: Optional shared positivity floor (mode dependent).
+            error_metric: Objective for minimization. ``'rss'`` (default)
+                minimizes the residual sum of squares (RSS). ``'mae'``
+                minimizes the sum of absolute residuals (SAE); reported MAE
+                in fit metrics is SAE / n_datapoints. Only lowercase ``'rss'``
+                or ``'mae'`` are accepted.
 
         Returns:
-            ``(OptimizeResult-like, param_info, metrics_dict)``.
+            ``(OptimizeResult-like, param_info, metrics_dict)`` where
+            ``metrics_dict`` has keys ``'rss'``, ``'tss'``, ``'r2'``,
+            ``'rmse'``, ``'mae'``, ``'n_datapoints'``. ``result.fun`` is the
+            minimized sum (RSS or SAE), not necessarily MAE.
 
         Raises:
-            ValueError: Invalid seeds, bounds, or incompatible log guesses.
+            ValueError: Invalid seeds, bounds, incompatible log guesses, or
+                invalid ``error_metric``.
         """
-        residual_func, param_info, fit_ctx = solve_fit_model_multi(
+        error_metric = _validate_error_metric(error_metric)
+        if (
+            error_metric == "mae"
+            and str(opt_method).lower() in _GRADIENT_OPT_METHODS
+        ):
+            warnings.warn(
+                "error_metric='mae' with a gradient-based opt_method "
+                "(e.g. 'L-BFGS-B') may have difficulty converging, because "
+                "the absolute-error objective is non-smooth. Consider a "
+                "derivative-free method such as 'Nelder-Mead'.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        objective, param_info, fit_ctx = solve_fit_model_multi(
             self.builded_rxnode, self.df_list, self.t_range,
-            method=self.method, rtol=self.rtol, df_names=self.df_names
+            method=self.method, rtol=self.rtol, df_names=self.df_names,
+            error_metric=error_metric,
         )
         self._fit_ctx = fit_ctx
 
@@ -530,15 +659,15 @@ class ExpDataFit:
             bounds_log = [(np.log(low), None)] * n_params
 
             def residual_log_safe(p):
-                """Residual in log-parameter space with a finite fallback value.
+                """Objective in log-parameter space with a finite fallback value.
 
                 Args:
                     p: ``log(k)`` vector of same length as the rate-parameter vector.
 
                 Returns:
-                    Scalar residual, or ``1e15`` when the nested evaluation is non-finite.
+                    Scalar objective (RSS or SAE), or ``1e15`` when non-finite.
                 """
-                r = residual_func(np.exp(p))
+                r = objective(np.exp(p))
                 return r if np.isfinite(r) else 1e15
 
             result_log = minimize(
@@ -560,24 +689,10 @@ class ExpDataFit:
             self._param_info = param_info
             self._result = result
 
-            metrics = compute_fit_metrics(fit_ctx['datasets'], result.fun)
-            result.tss = metrics['tss']
-            result.r2 = metrics['r2']
-            if metrics['tss'] < TSS_MIN_THRESHOLD:
-                warnings.warn(
-                    "TSS is nearly zero; R² may be unreliable.",
-                    UserWarning,
-                    stacklevel=2,
-                )
+            metrics = _metrics_after_fit(fit_ctx, x_linear)
             if verbose:
-                symbolic_keys = param_info['symbolic_rate_consts']
-                print(f"Optimization success: {result.success}")
-                print("Fitted rate constants:")
-                for k, v in zip(symbolic_keys, x_linear):
-                    print(f"  {k} = {v:.6g}")
-                print(
-                    f"Residual sum of squares: {metrics['rss']:.6g}  "
-                    f"R²: {metrics['r2']:.6g}"
+                _print_fit_verbose(
+                    result, param_info, metrics, error_metric, x_linear
                 )
 
             return result, param_info, metrics
@@ -587,7 +702,7 @@ class ExpDataFit:
             bounds = [(lower_bound or 1e-10, None)] * n_params
 
         result = minimize(
-            residual_func,
+            objective,
             p0,
             method=opt_method,
             bounds=bounds,
@@ -596,24 +711,10 @@ class ExpDataFit:
         self._param_info = param_info
         self._result = result
 
-        metrics = compute_fit_metrics(fit_ctx['datasets'], result.fun)
-        result.tss = metrics['tss']
-        result.r2 = metrics['r2']
-        if metrics['tss'] < TSS_MIN_THRESHOLD:
-            warnings.warn(
-                "TSS is nearly zero; R² may be unreliable.",
-                UserWarning,
-                stacklevel=2,
-            )
+        metrics = _metrics_after_fit(fit_ctx, result.x)
         if verbose:
-            symbolic_keys = param_info['symbolic_rate_consts']
-            print(f"Optimization success: {result.success}")
-            print("Fitted rate constants:")
-            for k, v in zip(symbolic_keys, result.x):
-                print(f"  {k} = {v:.6g}")
-            print(
-                f"Residual sum of squares: {metrics['rss']:.6g}  "
-                f"R²: {metrics['r2']:.6g}"
+            _print_fit_verbose(
+                result, param_info, metrics, error_metric, result.x
             )
 
         return result, param_info, metrics
@@ -786,7 +887,7 @@ class ExpDataFit:
 def run_fit_multi(builded_rxnode, df_list, p0, t_range=None,
                   method="RK45", rtol=1e-6, df_names=None,
                   opt_method='L-BFGS-B', bounds=None, verbose=True,
-                  use_log_fit=False, lower_bound=None):
+                  use_log_fit=False, lower_bound=None, error_metric="rss"):
     """Stateful-free shortcut constructing :class:`ExpDataFit` then :meth:`~ExpDataFit.run_fit`.
 
     When ``t_range`` is omitted it becomes the min/max of the first dataframe's time column.
@@ -797,7 +898,8 @@ def run_fit_multi(builded_rxnode, df_list, p0, t_range=None,
         p0: Seeds understood by :meth:`ExpDataFit.run_fit`.
         t_range: Optional manual span tuple.
         method, rtol, df_names: Forwarded to the constructor.
-        opt_method, bounds, verbose, use_log_fit, lower_bound: Forwarded to :meth:`~ExpDataFit.run_fit`.
+        opt_method, bounds, verbose, use_log_fit, lower_bound, error_metric:
+            Forwarded to :meth:`~ExpDataFit.run_fit`.
 
     Returns:
         Same triple as :meth:`ExpDataFit.run_fit`.
@@ -821,4 +923,5 @@ def run_fit_multi(builded_rxnode, df_list, p0, t_range=None,
         verbose=verbose,
         use_log_fit=use_log_fit,
         lower_bound=lower_bound,
+        error_metric=error_metric,
     )
