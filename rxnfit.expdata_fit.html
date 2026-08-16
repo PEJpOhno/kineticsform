@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rxnfit.expdata_fit module &mdash; rxnfit 20260712 documentation</title>
+  <title>rxnfit.expdata_fit module &mdash; rxnfit 20260814 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=556528fc"></script>
+      <script src="_static/documentation_options.js?v=8c8793ac"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -172,7 +172,7 @@ callable rate hooks for time-dependent kinetics.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rxnfit.expdata_fit.ExpDataFit.run_fit">
-<span class="sig-name descname"><span class="pre">run_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="Link to this definition"></a></dt>
 <dd><p>Optimize rate constants via <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -184,13 +184,22 @@ Log-space mode rejects non-positive entries.</p></li>
 <li><p><strong>verbose</strong> – Toggle progress printing.</p></li>
 <li><p><strong>use_log_fit</strong> – Optimize <code class="docutils literal notranslate"><span class="pre">log(k)</span></code> internally while exposing linear <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
 <li><p><strong>lower_bound</strong> – Optional shared positivity floor (mode dependent).</p></li>
+<li><p><strong>error_metric</strong> – Objective for minimization. <code class="docutils literal notranslate"><span class="pre">'rss'</span></code> (default)
+minimizes the residual sum of squares (RSS). <code class="docutils literal notranslate"><span class="pre">'mae'</span></code>
+minimizes the sum of absolute residuals (SAE); reported MAE
+in fit metrics is SAE / n_datapoints. Only lowercase <code class="docutils literal notranslate"><span class="pre">'rss'</span></code>
+or <code class="docutils literal notranslate"><span class="pre">'mae'</span></code> are accepted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(OptimizeResult-like,</span> <span class="pre">param_info,</span> <span class="pre">metrics_dict)</span></code>.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(OptimizeResult-like,</span> <span class="pre">param_info,</span> <span class="pre">metrics_dict)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">metrics_dict</span></code> has keys <code class="docutils literal notranslate"><span class="pre">'rss'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tss'</span></code>, <code class="docutils literal notranslate"><span class="pre">'r2'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'rmse'</span></code>, <code class="docutils literal notranslate"><span class="pre">'mae'</span></code>, <code class="docutils literal notranslate"><span class="pre">'n_datapoints'</span></code>. <code class="docutils literal notranslate"><span class="pre">result.fun</span></code> is the
+minimized sum (RSS or SAE), not necessarily MAE.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Invalid seeds, bounds, or incompatible log guesses.</p>
+<dd class="field-odd"><p><strong>ValueError</strong> – Invalid seeds, bounds, incompatible log guesses, or
+    invalid <code class="docutils literal notranslate"><span class="pre">error_metric</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -216,7 +225,7 @@ Log-space mode rejects non-positive entries.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.expdata_fit.run_fit_multi">
-<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">run_fit_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.run_fit_multi" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">run_fit_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L-BFGS-B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.run_fit_multi" title="Link to this definition"></a></dt>
 <dd><p>Stateful-free shortcut constructing <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit" title="rxnfit.expdata_fit.ExpDataFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpDataFit</span></code></a> then <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">t_range</span></code> is omitted it becomes the min/max of the first dataframe’s time column.</p>
 <dl class="field-list simple">
@@ -234,6 +243,7 @@ Log-space mode rejects non-positive entries.</p></li>
 <li><p><strong>verbose</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
 <li><p><strong>use_log_fit</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
 <li><p><strong>lower_bound</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
+<li><p><strong>error_metric</strong> – Forwarded to <a class="reference internal" href="#rxnfit.expdata_fit.ExpDataFit.run_fit" title="rxnfit.expdata_fit.ExpDataFit.run_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_fit()</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -274,8 +284,8 @@ dict attached as attribute <code class="docutils literal notranslate"><span clas
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.expdata_fit.solve_fit_model_multi">
-<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">solve_fit_model_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.solve_fit_model_multi" title="Link to this definition"></a></dt>
-<dd><p>Prepare multi-experiment residuals sharing one kinetic parameter vector.</p>
+<span class="sig-prename descclassname"><span class="pre">rxnfit.expdata_fit.</span></span><span class="sig-name descname"><span class="pre">solve_fit_model_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builded_rxnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_span</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RK45'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rss'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.expdata_fit.solve_fit_model_multi" title="Link to this definition"></a></dt>
+<dd><p>Prepare multi-experiment objective sharing one kinetic parameter vector.</p>
 <p>Each DataFrame yields its own <code class="docutils literal notranslate"><span class="pre">(y0,</span> <span class="pre">t0)</span></code>; integrations stop at <code class="docutils literal notranslate"><span class="pre">t_span[1]</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -286,14 +296,19 @@ dict attached as attribute <code class="docutils literal notranslate"><span clas
 <li><p><strong>method</strong> – Passed to <a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode" title="rxnfit.solver_backend.solve_ode"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_ode()</span></code></a>.</p></li>
 <li><p><strong>rtol</strong> – Relative integration tolerance.</p></li>
 <li><p><strong>df_names</strong> – Optional labels; see <code class="xref py py-func docutils literal notranslate"><span class="pre">_resolve_df_names()</span></code>.</p></li>
+<li><p><strong>error_metric</strong> – <code class="docutils literal notranslate"><span class="pre">'rss'</span></code> (minimize RSS) or <code class="docutils literal notranslate"><span class="pre">'mae'</span></code> (minimize SAE).
+Only lowercase <code class="docutils literal notranslate"><span class="pre">'rss'</span></code> or <code class="docutils literal notranslate"><span class="pre">'mae'</span></code> are accepted. For <code class="docutils literal notranslate"><span class="pre">'mae'</span></code>,
+the optimizer minimizes the sum of absolute residuals (SAE);
+reported MAE in fit metrics is SAE / n_datapoints.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(residual_func,</span> <span class="pre">param_info,</span> <span class="pre">fit_ctx)</span></code> where <code class="docutils literal notranslate"><span class="pre">residual_func(params)</span></code>
-returns the summed squared error and <code class="docutils literal notranslate"><span class="pre">fit_ctx</span></code> backs plotting helpers.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(objective,</span> <span class="pre">param_info,</span> <span class="pre">fit_ctx)</span></code> where <code class="docutils literal notranslate"><span class="pre">objective(params)</span></code> returns
+the selected sum (RSS or SAE) and <code class="docutils literal notranslate"><span class="pre">fit_ctx</span></code> backs plotting helpers.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Empty <code class="docutils literal notranslate"><span class="pre">df_list</span></code> or invalid column layout.</p>
+<dd class="field-odd"><p><strong>ValueError</strong> – Empty <code class="docutils literal notranslate"><span class="pre">df_list</span></code>, invalid column layout, or bad
+    <code class="docutils literal notranslate"><span class="pre">error_metric</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>

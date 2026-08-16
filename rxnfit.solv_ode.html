@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rxnfit.solv_ode module &mdash; rxnfit 20260712 documentation</title>
+  <title>rxnfit.solv_ode module &mdash; rxnfit 20260814 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=556528fc"></script>
+      <script src="_static/documentation_options.js?v=8c8793ac"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -123,7 +123,7 @@ optional LSODA / numbalsoda; see that module for dispatch rules and fallbacks).<
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Integrate reaction-network ODEs and compare against experiments.</p>
 <p>Time stepping is delegated to <a class="reference internal" href="rxnfit.solver_backend.html#rxnfit.solver_backend.solve_ode" title="rxnfit.solver_backend.solve_ode"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_ode()</span></code></a>
-(LSODA / numbalsoda policy is documented there). Plotting and RSS-based
+(LSODA / numbalsoda policy is documented there). Plotting and fit
 metrics reuse <a class="reference internal" href="rxnfit.plot_results.html#module-rxnfit.plot_results" title="rxnfit.plot_results"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rxnfit.plot_results</span></code></a> and <a class="reference internal" href="rxnfit.fit_metrics.html#module-rxnfit.fit_metrics" title="rxnfit.fit_metrics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rxnfit.fit_metrics</span></code></a>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rxnfit.solv_ode.RxnODEsolver.builder">
@@ -152,22 +152,26 @@ metrics reuse <a class="reference internal" href="rxnfit.plot_results.html#modul
 <dl class="py method">
 <dt class="sig sig-object py" id="rxnfit.solv_ode.RxnODEsolver.eval_fit_metrics">
 <span class="sig-name descname"><span class="pre">eval_fit_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdata_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.solv_ode.RxnODEsolver.eval_fit_metrics" title="Link to this definition"></a></dt>
-<dd><p>Return <code class="docutils literal notranslate"><span class="pre">{'rss',</span> <span class="pre">'tss',</span> <span class="pre">'r2'}</span></code> using <a class="reference internal" href="rxnfit.fit_metrics.html#rxnfit.fit_metrics.fit_metrics" title="rxnfit.fit_metrics.fit_metrics"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_metrics()</span></code></a>.</p>
+<dd><p>Return fit metrics using <a class="reference internal" href="rxnfit.fit_metrics.html#rxnfit.fit_metrics.fit_metrics" title="rxnfit.fit_metrics.fit_metrics"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_metrics()</span></code></a>.</p>
 <p>NaNs are dropped consistently; TSS is per-species about the experimental mean.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>expdata_df</strong> – Time in column 0; species columns match <code class="docutils literal notranslate"><span class="pre">function_names</span></code>.</p></li>
 <li><p><strong>solution</strong> – Optional trajectory for the interpolation path.</p></li>
-<li><p><strong>verbose</strong> – Print RSS and R² when true.</p></li>
-<li><p><strong>recompute</strong> – Forwarded to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_rss()</span></code>.</p></li>
+<li><p><strong>verbose</strong> – Print RSS, R², RMSE, and MAE when true.</p></li>
+<li><p><strong>recompute</strong> – Forwarded to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_errors()</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Metric dictionary of floats.</p>
+<dd class="field-even"><p>Keys <code class="docutils literal notranslate"><span class="pre">'rss'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tss'</span></code>, <code class="docutils literal notranslate"><span class="pre">'r2'</span></code>, <code class="docutils literal notranslate"><span class="pre">'rmse'</span></code>, <code class="docutils literal notranslate"><span class="pre">'mae'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'n_datapoints'</span></code>.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Same as <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_rss()</span></code> (interpolation path).</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Same as <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_errors()</span></code> (interpolation path).</p>
 </dd>
 </dl>
 <div class="admonition note">

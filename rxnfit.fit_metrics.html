@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rxnfit.fit_metrics module &mdash; rxnfit 20260712 documentation</title>
+  <title>rxnfit.fit_metrics module &mdash; rxnfit 20260814 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=556528fc"></script>
+      <script src="_static/documentation_options.js?v=8c8793ac"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -88,9 +88,10 @@
              
   <section id="module-rxnfit.fit_metrics">
 <span id="rxnfit-fit-metrics-module"></span><h1>rxnfit.fit_metrics module<a class="headerlink" href="#module-rxnfit.fit_metrics" title="Link to this heading"></a></h1>
-<p>Goodness-of-fit metrics (RSS, TSS, R²) shared by solvers and fitters.</p>
-<p>Residuals and total sum of squares omit NaN pairs so RSS and TSS always refer
-to the same set of valid (time, species) samples.</p>
+<p>Goodness-of-fit metrics shared by solvers and fitters.</p>
+<p>Computes RSS, TSS, R², RMSE, and MAE. Residuals and totals omit NaN pairs so
+RSS, SAE, and <code class="docutils literal notranslate"><span class="pre">n_datapoints</span></code> always refer to the same valid (time, species)
+samples.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.fit_metrics.expdata_df_to_datasets">
 <span class="sig-prename descclassname"><span class="pre">rxnfit.fit_metrics.</span></span><span class="sig-name descname"><span class="pre">expdata_df_to_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdata_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.fit_metrics.expdata_df_to_datasets" title="Link to this definition"></a></dt>
@@ -122,22 +123,27 @@ all function_names.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rxnfit.fit_metrics.fit_metrics">
-<span class="sig-prename descclassname"><span class="pre">rxnfit.fit_metrics.</span></span><span class="sig-name descname"><span class="pre">fit_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rss</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.fit_metrics.fit_metrics" title="Link to this definition"></a></dt>
-<dd><p>Compute fit metrics (RSS, TSS, R²) from datasets and RSS.</p>
-<p>TSS is computed from the same valid points as RSS, using per-species
-means. R² = 1 - RSS/TSS.</p>
+<span class="sig-prename descclassname"><span class="pre">rxnfit.fit_metrics.</span></span><span class="sig-name descname"><span class="pre">fit_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sae</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_datapoints</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rxnfit.fit_metrics.fit_metrics" title="Link to this definition"></a></dt>
+<dd><p>Compute fit metrics from datasets and residual sums.</p>
+<p>TSS uses per-species means over the same valid points as RSS/SAE.
+Callers should pass keyword arguments for <code class="docutils literal notranslate"><span class="pre">sae</span></code> and <code class="docutils literal notranslate"><span class="pre">n_datapoints</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fit_metrics</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">rss</span><span class="p">,</span> <span class="n">sae</span><span class="o">=</span><span class="n">sae</span><span class="p">,</span> <span class="n">n_datapoints</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>datasets</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – List of dicts with ‘t_list’, ‘C_exp_list’
 (each list of arrays in species order; valid points only).</p></li>
 <li><p><strong>rss</strong> (<em>float</em>) – Residual sum of squares (already computed).</p></li>
+<li><p><strong>sae</strong> (<em>float</em>) – Sum of absolute residuals (already computed).</p></li>
+<li><p><strong>n_datapoints</strong> (<em>int</em>) – Number of valid residual points (same set as RSS/SAE).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Keys ‘rss’, ‘tss’, ‘r2’ (all float). If TSS is zero or very</dt><dd><p>small, r2 may be inf or extreme; callers should warn when
-tss &lt; TSS_MIN_THRESHOLD.</p>
+<dt>Keys ‘rss’, ‘tss’, ‘r2’, ‘rmse’, ‘mae’, ‘n_datapoints’.</dt><dd><p>If TSS &lt;= 0, ‘r2’ is NaN. If <code class="docutils literal notranslate"><span class="pre">n_datapoints</span></code> &lt;= 0, ‘rmse’ and
+‘mae’ are NaN. Callers should warn when tss &lt; TSS_MIN_THRESHOLD.</p>
 </dd>
 </dl>
 </p>
