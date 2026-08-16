@@ -18,7 +18,7 @@ from optuna.exceptions import TrialPruned
 from optuna.trial import TrialState
 
 from .build_ode import RxnODEbuild
-from .expdata_fit import ExpDataFit
+from .expdata_fit import ExpDataFit, _validate_error_metric
 
 # Default exploration range (low, high) per spec
 _DEFAULT_LOW = 1e-8
@@ -93,6 +93,7 @@ class P0OptFit:
         storage: Optional[Union[str, optuna.storages.BaseStorage]] = None,
         seed: Optional[int] = None,
         catch: Optional[Union[Tuple[Type[BaseException], ...], List[Type[BaseException]]]] = None,
+        error_metric: str = "rss",
     ):
         """Initialize the p0 optimizer.
 
@@ -118,6 +119,11 @@ class P0OptFit:
                 Tuple or list of exception classes. If None, uses (TrialPruned, RuntimeError,
                 ValueError). If empty tuple/list, no exceptions are caught (strict mode;
                 any exception in the objective will stop optimization).
+            error_metric: Objective for ExpDataFit.run_fit and for the Optuna search.
+                ``'rss'`` (default) minimizes the residual sum of squares (RSS).
+                ``'mae'`` minimizes the sum of absolute residuals (SAE); reported MAE
+                in fit_metrics is SAE / n_datapoints. Only lowercase ``'rss'`` or
+                ``'mae'`` are accepted.
         """
         if not df_list:
             raise ValueError("df_list cannot be empty.")
@@ -149,6 +155,7 @@ class P0OptFit:
         self._verbose = verbose
         self._storage = storage
         self._seed = seed
+        self._error_metric = _validate_error_metric(error_metric)
         if catch is None:
             self._catch: Tuple[Type[BaseException], ...] = _DEFAULT_CATCH
         else:
@@ -157,7 +164,12 @@ class P0OptFit:
         self._study: Optional[optuna.Study] = None
 
     def _objective(self, trial: optuna.Trial) -> float:
-        """Optuna objective: suggest p0, run run_fit, return residual."""
+        """Optuna objective: suggest p0, run run_fit, return minimized sum.
+
+        Returns:
+            ``result.fun`` from :meth:`~rxnfit.expdata_fit.ExpDataFit.run_fit`
+            (RSS or SAE according to ``error_metric``).
+        """
         p0 = []
         for i, name in enumerate(self._symbolic_keys):
             low, high = self._bounds_per_param[i]
@@ -181,6 +193,7 @@ class P0OptFit:
             verbose=False,
             use_log_fit=self._use_log_fit,
             lower_bound=self._lower_bound,
+            error_metric=self._error_metric,
         )
         if not result.success:
             raise RuntimeError(
@@ -209,7 +222,8 @@ class P0OptFit:
         Returns:
             Tuple of (dict, fit_metrics):
                 - dict: { variable_name: (optimal_initial_value, fitted_value) }
-                - fit_metrics: Dict with keys 'rss', 'tss', 'r2'.
+                - fit_metrics: Dict with keys 'rss', 'tss', 'r2', 'rmse', 'mae',
+                  'n_datapoints'.
 
         Raises:
             RuntimeError: If all trials fail.
@@ -254,6 +268,7 @@ class P0OptFit:
             verbose=False,
             use_log_fit=self._use_log_fit,
             lower_bound=self._lower_bound,
+            error_metric=self._error_metric,
         )
         out_dict = {
             name: (p0_best[i], float(result.x[i]))
@@ -264,9 +279,12 @@ class P0OptFit:
             print("Fitted rate constants:")
             for i, name in enumerate(self._symbolic_keys):
                 print(f"  {name} = {result.x[i]:.6g}")
+            print(f"error_metric: {self._error_metric}")
             print(
-                f"Residual sum of squares: {fit_metrics_ret['rss']:.6g}  "
-                f"R²: {fit_metrics_ret['r2']:.6g}"
+                f"MAE: {fit_metrics_ret['mae']:.6g}  "
+                f"RSS: {fit_metrics_ret['rss']:.6g}  "
+                f"R²: {fit_metrics_ret['r2']:.6g}  "
+                f"RMSE: {fit_metrics_ret['rmse']:.6g}"
             )
         return (out_dict, fit_metrics_ret)
 
@@ -274,7 +292,15 @@ class P0OptFit:
         """Return per-trial log. Empty list if optimize() has not been run.
 
         Returns:
-            List of dicts with keys: trial_No, params, rss, state.
+            List of dicts with keys:
+                - trial_No: 1-based trial index
+                - params: suggested p0 for that trial
+                - error_metric: objective selected for minimization ('rss' or 'mae')
+                - sum_error: value of the minimized sum for that trial
+                    (RSS if error_metric='rss'; SAE, the sum of absolute
+                    residuals, if error_metric='mae'). This is the Optuna
+                    objective value (trial.value), not MAE (mean absolute error).
+                - state: Optuna trial state name
         """
         if self._study is None:
             return []
@@ -283,7 +309,8 @@ class P0OptFit:
             logs.append({
                 "trial_No": i + 1,
                 "params": dict(trial.params),
-                "rss": trial.value,
+                "error_metric": self._error_metric,
+                "sum_error": trial.value,
                 "state": trial.state.name,
             })
         return logs

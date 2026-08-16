@@ -85,7 +85,7 @@ class RxnODEsolver:
     """Integrate reaction-network ODEs and compare against experiments.
 
     Time stepping is delegated to :func:`~rxnfit.solver_backend.solve_ode`
-    (LSODA / numbalsoda policy is documented there). Plotting and RSS-based
+    (LSODA / numbalsoda policy is documented there). Plotting and fit
     metrics reuse :mod:`rxnfit.plot_results` and :mod:`rxnfit.fit_metrics`.
 
     Attributes:
@@ -250,8 +250,8 @@ class RxnODEsolver:
         names = self.builder.function_names
         return [_ode_result_to_dataframe(sol, names, time_column_name)]
 
-    def _compute_rss(self, expdata_df, solution=None, recompute=True):
-        """Residual sum of squares against ``expdata_df``.
+    def _compute_errors(self, expdata_df, solution=None, recompute=True):
+        """Accumulate RSS, SAE, and point count against ``expdata_df``.
 
         Args:
             expdata_df: Experimental table; column 0 is time, others species.
@@ -259,7 +259,7 @@ class RxnODEsolver:
             recompute: If True, integrate again on the union of experimental times.
 
         Returns:
-            Scalar RSS.
+            dict: Keys ``'rss'``, ``'sae'``, ``'n_datapoints'``.
 
         Raises:
             RuntimeError: Missing ``ode_construct``, no valid experimental times,
@@ -267,8 +267,8 @@ class RxnODEsolver:
 
         Note:
             If re-integration raises or returns ``success=False``, a warning is
-            issued and RSS falls back to :meth:`_compute_rss_interp` instead of
-            raising immediately.
+            issued and errors fall back to :meth:`_compute_errors_interp`
+            instead of raising immediately.
         """
         if recompute:
             if self.ode_construct is None:
@@ -333,11 +333,13 @@ class RxnODEsolver:
                     UserWarning,
                     stacklevel=2,
                 )
-                return self._compute_rss_interp(expdata_df, solution)
+                return self._compute_errors_interp(expdata_df, solution)
             time_to_idx = {float(t): idx for idx, t in enumerate(sol_new.t)}
             names = self.builder.function_names
             name_to_idx = {name: i for i, name in enumerate(names)}
             rss = 0.0
+            sae = 0.0
+            n_datapoints = 0
             for col in expdata_df.columns[1:]:
                 if col not in name_to_idx:
                     continue
@@ -349,20 +351,27 @@ class RxnODEsolver:
                         continue
                     t_j = float(t_j)
                     idx = time_to_idx[t_j]
-                    rss += (c_exp[j] - sol_new.y[i][idx]) ** 2
-            return float(rss)
+                    resid = c_exp[j] - sol_new.y[i][idx]
+                    rss += resid ** 2
+                    sae += abs(resid)
+                    n_datapoints += 1
+            return {
+                "rss": float(rss),
+                "sae": float(sae),
+                "n_datapoints": n_datapoints,
+            }
 
-        return self._compute_rss_interp(expdata_df, solution)
+        return self._compute_errors_interp(expdata_df, solution)
 
-    def _compute_rss_interp(self, expdata_df, solution=None):
-        """RSS via linear interpolation of an existing trajectory.
+    def _compute_errors_interp(self, expdata_df, solution=None):
+        """RSS/SAE via linear interpolation of an existing trajectory.
 
         Args:
-            expdata_df: Same layout as :meth:`_compute_rss`.
+            expdata_df: Same layout as :meth:`_compute_errors`.
             solution: Trajectory to interpolate; defaults to :attr:`solution`.
 
         Returns:
-            Scalar RSS.
+            dict: Keys ``'rss'``, ``'sae'``, ``'n_datapoints'``.
 
         Raises:
             RuntimeError: When no trajectory is available.
@@ -376,45 +385,60 @@ class RxnODEsolver:
         names = self.builder.function_names
         name_to_idx = {name: i for i, name in enumerate(names)}
         rss = 0.0
+        sae = 0.0
+        n_datapoints = 0
         for col in expdata_df.columns[1:]:
             if col not in name_to_idx:
                 continue
             i = name_to_idx[col]
             c_exp = expdata_df[col].to_numpy()
-            mask = ~np.isnan(c_exp)
+            mask = ~np.isnan(c_exp) & ~pd.isna(t_exp)
             if not np.any(mask):
                 continue
             t_m = t_exp[mask]
             c_m = c_exp[mask]
             c_model = np.interp(t_m, sol.t, sol.y[i])
-            rss += np.sum((c_m - c_model) ** 2)
-        return float(rss)
+            resid = c_m - c_model
+            rss += np.sum(resid ** 2)
+            sae += np.sum(np.abs(resid))
+            n_datapoints += int(np.size(resid))
+        return {
+            "rss": float(rss),
+            "sae": float(sae),
+            "n_datapoints": n_datapoints,
+        }
 
     def eval_fit_metrics(self, expdata_df, solution=None, verbose=True, recompute=True):
-        """Return ``{'rss', 'tss', 'r2'}`` using :func:`~rxnfit.fit_metrics.fit_metrics`.
+        """Return fit metrics using :func:`~rxnfit.fit_metrics.fit_metrics`.
 
         NaNs are dropped consistently; TSS is per-species about the experimental mean.
 
         Args:
             expdata_df: Time in column 0; species columns match ``function_names``.
             solution: Optional trajectory for the interpolation path.
-            verbose: Print RSS and R² when true.
-            recompute: Forwarded to :meth:`_compute_rss`.
+            verbose: Print RSS, R², RMSE, and MAE when true.
+            recompute: Forwarded to :meth:`_compute_errors`.
 
         Returns:
-            Metric dictionary of floats.
+            dict: Keys ``'rss'``, ``'tss'``, ``'r2'``, ``'rmse'``, ``'mae'``,
+            ``'n_datapoints'``.
 
         Raises:
-            RuntimeError: Same as :meth:`_compute_rss` (interpolation path).
+            RuntimeError: Same as :meth:`_compute_errors` (interpolation path).
 
         Note:
             :func:`~rxnfit.fit_metrics.expdata_df_to_datasets` may raise
             ``ValueError`` if species columns required by ``function_names`` are
             missing from ``expdata_df``.
         """
-        rss = self._compute_rss(expdata_df, solution, recompute)
+        errors = self._compute_errors(expdata_df, solution, recompute)
         datasets = expdata_df_to_datasets(expdata_df, self.builder.function_names)
-        metrics = compute_fit_metrics(datasets, rss)
+        metrics = compute_fit_metrics(
+            datasets,
+            errors["rss"],
+            sae=errors["sae"],
+            n_datapoints=errors["n_datapoints"],
+        )
         if metrics["tss"] < TSS_MIN_THRESHOLD:
             warnings.warn(
                 "TSS is nearly zero; R² may be unreliable.",
@@ -423,8 +447,10 @@ class RxnODEsolver:
             )
         if verbose:
             print(
-                f"Residual sum of squares: {metrics['rss']:.6g}  "
-                f"R²: {metrics['r2']:.6g}"
+                f"MAE: {metrics['mae']:.6g}  "
+                f"RSS: {metrics['rss']:.6g}  "
+                f"R²: {metrics['r2']:.6g}  "
+                f"RMSE: {metrics['rmse']:.6g}"
             )
         return metrics
 

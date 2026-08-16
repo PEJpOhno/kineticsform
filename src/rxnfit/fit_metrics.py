@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-3-style
 # license that can be found in the LICENSE file.
 
-"""Goodness-of-fit metrics (RSS, TSS, R²) shared by solvers and fitters.
+"""Goodness-of-fit metrics shared by solvers and fitters.
 
-Residuals and total sum of squares omit NaN pairs so RSS and TSS always refer
-to the same set of valid (time, species) samples.
+Computes RSS, TSS, R², RMSE, and MAE. Residuals and totals omit NaN pairs so
+RSS, SAE, and ``n_datapoints`` always refer to the same valid (time, species)
+samples.
 """
 
-import warnings
 import numpy as np
 
 from .expdata_reader import time_course, align_expdata_to_function_names
@@ -68,25 +68,45 @@ def _compute_tss(datasets):
     return float(tss)
 
 
-def fit_metrics(datasets, rss):
-    """Compute fit metrics (RSS, TSS, R²) from datasets and RSS.
+def fit_metrics(datasets, rss, sae, n_datapoints):
+    """Compute fit metrics from datasets and residual sums.
 
-    TSS is computed from the same valid points as RSS, using per-species
-    means. R² = 1 - RSS/TSS.
+    TSS uses per-species means over the same valid points as RSS/SAE.
+    Callers should pass keyword arguments for ``sae`` and ``n_datapoints``::
+
+        fit_metrics(datasets, rss, sae=sae, n_datapoints=n)
 
     Args:
         datasets (list[dict]): List of dicts with 't_list', 'C_exp_list'
             (each list of arrays in species order; valid points only).
         rss (float): Residual sum of squares (already computed).
+        sae (float): Sum of absolute residuals (already computed).
+        n_datapoints (int): Number of valid residual points (same set as RSS/SAE).
 
     Returns:
-        dict: Keys 'rss', 'tss', 'r2' (all float). If TSS is zero or very
-            small, r2 may be inf or extreme; callers should warn when
-            tss < TSS_MIN_THRESHOLD.
+        dict: Keys 'rss', 'tss', 'r2', 'rmse', 'mae', 'n_datapoints'.
+            If TSS <= 0, 'r2' is NaN. If ``n_datapoints`` <= 0, 'rmse' and
+            'mae' are NaN. Callers should warn when tss < TSS_MIN_THRESHOLD.
     """
+    rss_f = float(rss)
+    sae_f = float(sae)
+    n = int(n_datapoints)
     tss = _compute_tss(datasets)
     if tss <= 0:
         r2 = np.nan
     else:
-        r2 = 1.0 - (float(rss) / tss)
-    return {"rss": float(rss), "tss": float(tss), "r2": float(r2)}
+        r2 = 1.0 - (rss_f / tss)
+    if n <= 0:
+        rmse = np.nan
+        mae = np.nan
+    else:
+        rmse = float(np.sqrt(rss_f / n))
+        mae = float(sae_f / n)
+    return {
+        "rss": rss_f,
+        "tss": float(tss),
+        "r2": float(r2),
+        "rmse": rmse,
+        "mae": mae,
+        "n_datapoints": n,
+    }
